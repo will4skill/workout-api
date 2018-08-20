@@ -1,0 +1,4 @@
+{
+  "jwt_private_key": "",
+  "db": "mongodb://localhost/workout_db"
+}
