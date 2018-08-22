@@ -129,8 +129,7 @@
 
 'GET /' // Return all exercises
 // 1. return 401 if client not logged in
-// 2. return 403 if user is not admin
-// 3. return all exercises (stat code 200)
+// 2. return all exercises (stat code 200)
 
 'POST /' // Create new exercise
 // 1. return 401 if client not logged in
@@ -168,8 +167,7 @@
 
 'GET /' // Return all muscles
 // 1. return 401 if client not logged in
-// 2. return 403 if user is not admin
-// 3. return all muscles (stat code 200)
+// 2. return all muscles (stat code 200)
 
 'POST /' // Create new muscle
 // 1. return 401 if client not logged in
