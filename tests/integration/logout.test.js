@@ -1,7 +1,20 @@
-// API/Logout
+const User = require('../../models/user');
+const request = require('supertest');
+const mongoose = require('mongoose');
+let server;
 
-'DELETE /' // log current user out (user ID from JWT)
-// 1. return 400 if client not logged in
-// 2. return 403 if user is not current user
-// 3. return 404 if invalid ID
-// 5. set remember_digest to nil db (stat code 200)
+describe('/api/users', () => {
+  beforeEach(() => { server = require('../../index'); })
+  afterEach(async () => {
+    await server.close();
+    await User.remove({});
+  });
+
+  describe('DELETE /', () => {
+    it('should return 400 if client not logged in', async () => {});
+    it('should return 403 if user is not current user', async () => {});
+    it('should return 404 if invalid ID', async () => {});
+    it('should set remember_digest to nil db (stat code 200)', async () => {});
+  });
+
+});

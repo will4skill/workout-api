@@ -29,4 +29,4 @@ const completedExerciseSchema = new mongoose.Schema({
 });
 
 const completedExercise = mongoose.model('completedExercise', completedExerciseSchema);
-exports.completedExercise = completedExercise
+module.exports = completedExercise

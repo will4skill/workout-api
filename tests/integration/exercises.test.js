@@ -1,36 +1,64 @@
-// API/exercises
+const Exercise = require('../../models/exercise');
+const Muscle = require('../../models/muscle');
+const request = require('supertest');
+const mongoose = require('mongoose');
+let server;
 
-'GET /' // Return all exercises
-// 1. return 401 if client not logged in
-// 2. return all exercises (stat code 200)
+describe('/api/users', () => {
+  beforeEach(() => { server = require('../../index'); })
+  afterEach(async () => {
+    await server.close();
+    await Exercise.remove({});
+    await Muscle.remove({});
+  });
 
-'POST /' // Create new exercise
-// 1. return 401 if client not logged in
-// 2. return 403 if user is not admin
-// 3. return 400 if exercise is invalid
-// 4. Save exercise if exercise is valid [* Exercise - Muscle *]
-// 5. Return exercise if exercise is valid
+  describe('GET /', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return all exercises (stat code 200)', async () => {});
+  });
 
-'GET /ID' // Get specific exercise
-// 1. return 401 if client not logged in
-// 2. return 403 if user is not admin
-// 3. return 404 if invalid exercise ID
-// 4. return 404 if exerciseID valid but exerciseID not in DB
-// 5. return specific exercise if valid exerciseID
+  describe('POST /', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 403 if user is not admin', async () => {});
+    it('should return 400 if exercise is invalid', async () => {});
+    it('should save exercise if exercise is valid [* Exercise - Muscle *]', async () => {});
+    it('should return exercise if exercise is valid', async () => {}); 
+  });
 
-'PUT /ID' // Update specific exercise
-// 1. return 401 if client not logged in
-// 2. return 403 if user is not admin
-// 3. return 400 if exercise is invalid
-// 4. return 404 if invalid exerciseID
-// 5. return 404 if exerciseID valid but exerciseID not in DB 
-// 6. update exercise if input is valid
-// 7. return updated exercise if it is valid
+  describe('GET /ID', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 403 if user is not admin', async () => {});
+    it('should return 404 if invalid exercise ID', async () => {});
+    it('should return 404 if exerciseID valid but exerciseID not in DB', async () => {});
+    it('should return specific exercise if valid exerciseID', async () => {});
+  });
 
-'DELETE /ID' // Delete specific exercise
-// 1. return 401 if client not logged in
-// 2. return 403 if user is not admin
-// 3. return 404 if invalid exerciseID
-// 4. return 404 if exerciseID valid but exerciseID not in DB
-// 5. delete exercise if input is valid
-// 6. return deleted exercise
+  describe('PUT /ID', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 403 if user is not admin', async () => {});
+    it('should return 400 if exercise is invalid', async () => {});
+    it('should return 404 if invalid exerciseID', async () => {});
+    it('should return 404 if exerciseID valid but exerciseID not in DB', async () => {});
+    it('should update exercise if input is valid', async () => {});
+    it('should return updated exercise if it is valid', async () => {});
+  });
+
+  describe('DELETE /ID', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 403 if user is not admin', async () => {});
+    it('should return 404 if invalid exerciseID', async () => {});
+    it('should return 404 if exerciseID valid but exerciseID not in DB', async () => {});
+    it('should delete exercise if input is valid', async () => {});
+    it('should return deleted exercise', async () => {});
+  });
+
+});
+
+
+
+
+
+
+
+
+

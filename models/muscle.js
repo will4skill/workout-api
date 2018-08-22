@@ -10,4 +10,4 @@ const muscleSchema = new mongoose.Schema({
 });
 
 const Muscle = mongoose.model('Muscle', muscleSchema);
-exports.Muscle = Muscle;
+module.exports = Muscle;

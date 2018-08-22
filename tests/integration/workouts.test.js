@@ -1,34 +1,56 @@
-// API/Workouts
+const Workout = require('../../models/workout');
+const User = require('../../models/user');
+const request = require('supertest');
+const mongoose = require('mongoose');
+let server;
 
-'GET /' // Return all workouts for current user (user ID from JWT)
-// 1. return 401 if client not logged in
-// 2. return all workouts for current user (stat code 200)
+describe('/api/users', () => {
+  beforeEach(() => { server = require('../../index'); })
+  afterEach(async () => {
+    await server.close();
+    await Workout.remove({});
+    await User.remove({});
+  });
 
-'POST /' // Create new workout for current user (user ID from JWT)
-// 1. return 401 if client not logged in
-// 2. return 400 if workout is invalid
-// 3. Save workout if workout is valid [* User -> Workout *]
-//    a. workout should have >= 1 completed_exercise
-// 4. Return workout if workout is valid
+  describe('GET /', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return all workouts for current user (stat code 200)', async () => {});
+  });
 
-'GET /ID' // Get specific workout for current user (user ID from JWT)
-// 1. return 401 if client not logged in
-// 2. return 404 if invalid workout ID
-// 3. return 404 if workoutID valid but workoutID not in DB
-// 4. return specific workout if valid workoutID
+  describe('POST /', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 400 if workout is invalid', async () => {});
+    it('should save workout if workout is valid [* User -> Workout *]', async () => {
+      //workout should have >= 1 completed_exercise
+    });
+    it('should return workout if workout is valid', async () => {});
+  });
 
-'PUT /ID' // Update specific workout for current user (user ID from JWT)
-// 1. return 401 if client not logged in
-// 2. return 400 if workout is invalid
-// 3. return 404 if invalid workoutID
-// 4. return 404 if workoutID valid but workoutID not in DB 
-// 5. update workout if input is valid
-// 6. return updated workout if it is valid
+  describe('GET /ID', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 404 if invalid workout ID', async () => {});
+    it('should return 404 if workoutID valid but workoutID not in DB', async () => {});
+    it('should return specific workout if valid workoutID', async () => {});
+  });
 
-'DELETE /ID' // Delete specific workout for current user (user ID from JWT)
-// 1. return 401 if client not logged in
-// 2. return 403 if user is not current user
-// 3. return 404 if invalid workoutID
-// 4. return 404 if workoutID valid but workoutID not in DB
-// 5. delete workout if input is valid
-// 6. return deleted workout
+  describe('PUT /ID', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 400 if workout is invalid', async () => {});
+    it('should return 404 if invalid workoutID', async () => {});
+    it('should return 404 if workoutID valid but workoutID not in DB', async () => {});
+    it('should update workout if input is valid', async () => {});
+    it('should return updated workout if it is valid', async () => {});
+  });
+
+  describe('DELETE /ID', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 403 if user is not current user', async () => {});
+    it('should return 404 if invalid workoutID', async () => {});
+    it('should return 404 if workoutID valid but workoutID not in DB', async () => {});
+    it('should delete workout if input is valid', async () => {});
+    it('should return deleted workout', async () => {});
+  });
+
+});
+
+

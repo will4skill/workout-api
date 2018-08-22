@@ -1,36 +1,53 @@
-// API/muscles
+const Muscle = require('../../models/muscle');
+const request = require('supertest');
+const mongoose = require('mongoose');
+let server;
 
-'GET /' // Return all muscles
-// 1. return 401 if client not logged in
-// 2. return all muscles (stat code 200)
+describe('/api/muscles', () => {
+  beforeEach(() => { server = require('../../index'); })
+  afterEach(async () => {
+    await server.close();
+    await Muscle.remove({});
+  });
 
-'POST /' // Create new muscle
-// 1. return 401 if client not logged in
-// 2. return 403 if user is not admin
-// 3. return 400 if muscle is invalid
-// 4. Save muscle if muscle is valid 
-// 5. Return muscle if muscle is valid
+  describe('GET /', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return all muscles (stat code 200)', async () => {});
+  });
 
-'GET /ID' // Get specific muscle
-// 1. return 401 if client not logged in
-// 2. return 403 if user is not admin
-// 3. return 404 if invalid muscle ID
-// 4. return 404 if muscleID valid but muscleID not in DB
-// 5. return specific muscle if valid muscleID
+  describe('POST /', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 403 if user is not admin', async () => {});
+    it('should return 400 if muscle is invalid', async () => {});
+    it('should save muscle if muscle is valid', async () => {});
+    it('should return muscle if muscle is valid', async () => {});
+  });
 
-'PUT /ID' // Update specific muscle
-// 1. return 401 if client not logged in
-// 2. return 403 if user is not admin
-// 3. return 400 if muscle is invalid
-// 4. return 404 if invalid muscleID
-// 5. return 404 if muscleID valid but muscleID not in DB 
-// 6. update muscle if input is valid
-// 7. return updated muscle if it is valid
+  describe('GET /ID', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 403 if user is not admin', async () => {});
+    it('should return 404 if invalid muscle ID', async () => {});
+    it('should return 404 if muscleID valid but muscleID not in DB', async () => {});
+    it('should return specific muscle if valid muscleID', async () => {});
+  });
 
-'DELETE /ID' // Delete specific muscle
-// 1. return 401 if client not logged in
-// 2. return 403 if user is not admin
-// 3. return 404 if invalid muscleID
-// 4. return 404 if muscleID valid but muscleID not in DB
-// 5. delete muscle if input is valid
-// 6. return deleted muscle
+  describe('PUT /ID', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 403 if user is not admin', async () => {});
+    it('should return 400 if muscle is invalid', async () => {});
+    it('should return 404 if invalid muscleID ', async () => {});
+    it('should return 404 if muscleID valid but muscleID not in DB', async () => {});
+    it('should update muscle if input is valid', async () => {});
+    it('should return updated muscle if it is valid', async () => {});
+  });
+
+  describe('DELETE /ID', () => {
+    it('should return 401 if client not logged in', async () => {});
+    it('should return 403 if user is not admin', async () => {});
+    it('should return 404 if invalid muscleID', async () => {});
+    it('should return 404 if muscleID valid but muscleID not in DB', async () => {});
+    it('should delete muscle if input is valid', async () => {});
+    it('should return deleted muscle', async () => {});
+  });
+
+});
