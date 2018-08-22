@@ -18,7 +18,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 6,
     maxlength: 255,
-    required: true
   },
   remember_digest: {
     type: String
@@ -29,7 +28,10 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-userSchema.methods.generateAuthToken = function() {};
+userSchema.methods.generateAuthToken = function() {
+  const secret = config.get('jwt_private_key');
+  return jwt.sign({ _id: this._id, admin: this.admin }, secret );
+};
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
