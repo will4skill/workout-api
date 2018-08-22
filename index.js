@@ -36,7 +36,7 @@ app.use('/api/users', users);
 // app.use('/api/muscles', muscles);
 // app.use('/api/login', login);
 // app.use('/api/logout', logout);
-// app.use(error);
+// app.use(error); // express default error handler
 // ** Express Routes: End ******************************************************
 
 // ** Database Setup: Start ****************************************************
