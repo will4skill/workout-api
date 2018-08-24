@@ -6,12 +6,12 @@ const mongoose = require('mongoose');
 let server;
 
 describe('/api/users', () => {
-  beforeEach(() => { server = require('../../index'); })
-  afterEach(async () => {
-    await server.close();
-    await CompletedExercise.remove({});
-    await Workout.remove({});
-  });
+  // beforeEach(() => { server = require('../../index'); })
+  // afterEach(async () => {
+  //   await server.close();
+  //   await CompletedExercise.remove({});
+  //   await Workout.remove({});
+  // });
 
   describe('GET /', () => {
     it('should return 401 if client not logged in', async () => {});

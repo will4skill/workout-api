@@ -36,7 +36,7 @@ app.use('/api/users', users);
 // app.use('/api/muscles', muscles);
 // app.use('/api/login', login);
 // app.use('/api/logout', logout);
-// app.use(error); // express default error handler
+app.use(error); // express default error handler
 // ** Express Routes: End ******************************************************
 
 // ** Database Setup: Start ****************************************************
@@ -51,7 +51,7 @@ if (config.has('jwt_private_key') == false) {
 // ** Private Key Setup: End ***************************************************
 
 // ** Server Setup: Start ******************************************************
-const port = 5000; //process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 const server = app.listen(port, () => logger.info(`Listening on port ${port}...`));
 module.exports = server; // Export for use in tests
 // ** Server Setup: End ********************************************************

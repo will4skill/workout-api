@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 let server;
 
 describe('/api/users', () => {
-  beforeEach(() => { server = require('../../index'); })
-  afterEach(async () => {
-    await server.close();
-    await User.remove({});
-  });
+  // beforeEach(() => { server = require('../../index'); })
+  // afterEach(async () => {
+  //   await server.close();
+  //   await User.remove({});
+  // });
 
   describe('POST /', () => {
     it('should return 400 if request params are invalid', async () => {});

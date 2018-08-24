@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 let server;
 
 describe('/api/users', () => {
-  beforeEach(() => { server = require('../../index'); })
-  afterEach(async () => {
-    await server.close();
-    await User.remove({});
-  });
+  // beforeEach(() => { server = require('../../index'); })
+  // afterEach(async () => {
+  //   await server.close();
+  //   await User.remove({});
+  // });
 
   describe('DELETE /', () => {
     it('should return 400 if client not logged in', async () => {});
