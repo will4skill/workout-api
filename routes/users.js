@@ -46,22 +46,23 @@ router.get('/me', auth, async (req, res) => {
   res.send(user);
 });
 
-// router.put('/me', auth, async (req, res) => {
-//   // const old_user = await User.findById(req.user._id);
-//   // const name = req.body.name || old_user.name;
-//   // const email = req.body.email || old_user.email;
-//   // const password = req.body.name || old_user.password;
+router.put('/me', auth, async (req, res) => {
+  // TODO: 
+  // 1. add ability to update password. Don't forget to update token if password is updated.
+  // 2. add ability to update a single property
 
-//   // const salt = await bcrypt.genSalt(10);
-//   // const password_digest = await bcrypt.hash(req.body.password, salt);
-//   // const user = await User.findByIdAndUpdate(req.user._id, {
-//   //   name: req.body.name,
-//   //   email: req.body.email,
-//   //   password_digest: password_digest
-//   // }, new: true);
-//   // res.send(user);
-
-// });
+  try {
+      const user = await User.findByIdAndUpdate(req.user._id , 
+      { 
+        name: req.body.name,
+        email: req.body.email
+      }, 
+      { new: true, runValidators: true });
+      res.send(user);
+  } catch(err) {
+    res.status(400).send(err);
+  }
+});
 
 router.delete('/:id', [auth, admin, validateObjectId], async (req, res) => {
   const user = await User.findByIdAndRemove(req.params.id);

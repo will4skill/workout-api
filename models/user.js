@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     maxlength: 50,
     required: true
   },
-  email: {
+  email: { // TODO: add regex for better validations
     type: String,
     maxlength: 255,
     required: true,

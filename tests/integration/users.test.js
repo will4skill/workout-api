@@ -5,7 +5,6 @@ let server;
 
 describe('/api/users', () => {
   beforeEach(() => { 
-    process.env.NODE_ENV = 'test';
     server = require('../../index'); 
   })
   afterEach(async () => {
@@ -102,24 +101,36 @@ describe('/api/users', () => {
     });
   });
 
-  // describe('PUT /ME', () => {
-  //   it('should return 401 if client not logged in', async () => {
-  //     const res = await request(server).put('/api/users/1');
-  //     expect(res.status).toBe(401);      
-  //   });
-  //   it('should update user if input is valid', async () => {
-
-  //   });
-  //   it('should return updated user if it is valid', async () => {
-  //     const user = new User({ name: 'bob' , email: 'bob@example.com' , password_digest: '123456'});
-  //     const token = user.generateAuthToken();
-  //     await user.save();
-  //     const res = await request(server).put('/api/users/me').set('x-auth-token', token).send({ name: "binky" });
-  //     expect(res.status).toBe(200);
-  //     expect(res.body).toHaveProperty('name', 'binky');
-  //     expect(res.body).toHaveProperty('email', user.email);
-  //   });
-  // });
+  describe('PUT /ME', () => {
+    it('should return 401 if client not logged in', async () => {
+      const res = await request(server).put('/api/users/me');
+      expect(res.status).toBe(401);      
+    });
+    it('should return 400 if user is invalid', async () => {
+      const user = new User({ name: 'bob' , email: 'bob@example.com' , password_digest: '123456'});
+      const token = user.generateAuthToken();
+      await user.save();
+      const res = await request(server).put('/api/users/me').set('x-auth-token', token).send({ name: ''});
+      expect(res.status).toBe(400); 
+    });
+    it('should update user if input is valid', async () => {
+      const user = new User({ name: 'bob' , email: 'bob@example.com' , password_digest: '123456'});
+      const token = user.generateAuthToken();
+      await user.save();
+      const res = await request(server).put('/api/users/me').set('x-auth-token', token).send({ name: 'binky', email: 'binky@badbunny.com'});
+      const result = await User.findById(user.id);
+      expect(result).toHaveProperty('name', 'binky');
+    });
+    it('should return updated user if it is valid', async () => {
+      const user = new User({ name: 'bob' , email: 'bob@example.com' , password_digest: '123456'});
+      const token = user.generateAuthToken();
+      await user.save();
+      const res = await request(server).put('/api/users/me').set('x-auth-token', token).send({ name: 'binky', email: 'binky@badbunny.com'});
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('name', 'binky');
+      expect(res.body).toHaveProperty('email', 'binky@badbunny.com');
+    });
+  });
 
   describe('DELETE /ID', () => {
     it('should return 401 if client not logged in', async () => {
