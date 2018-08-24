@@ -30,10 +30,10 @@ const error = require('./middleware/error');
 
 app.use(express.json());
 app.use('/api/users', users);
-// app.use('/api/workouts', workouts);
+//app.use('/api/workouts', workouts);
 // app.use('/api/completed_exercises', completed_exercises);
 // app.use('/api/exercises', exercises);
-// app.use('/api/muscles', muscles);
+app.use('/api/muscles', muscles);
 // app.use('/api/login', login);
 // app.use('/api/logout', logout);
 app.use(error); // express default error handler
@@ -41,7 +41,7 @@ app.use(error); // express default error handler
 
 // ** Database Setup: Start ****************************************************
 const db = config.get('db');
-mongoose.connect(db).then(() => logger.info(`Connected to ${db}...`));
+mongoose.connect(db, { useNewUrlParser: true }).then(() => logger.info(`Connected to ${db}...`));
 // ** Database Setup: End ******************************************************
 
 // ** Private Key Setup: Start *************************************************

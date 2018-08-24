@@ -4,10 +4,13 @@ const mongoose = require('mongoose');
 let server;
 
 describe('/api/users', () => {
-  beforeEach(() => { server = require('../../index'); })
+  beforeEach(() => { 
+    process.env.NODE_ENV = 'test';
+    server = require('../../index'); 
+  })
   afterEach(async () => {
     await server.close();
-    await User.remove({});
+    await User.deleteMany({});
   });
 
   describe('GET /', () => {
