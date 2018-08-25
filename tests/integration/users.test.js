@@ -218,6 +218,7 @@ describe('/api/users', () => {
 
       expect(res.status).toBe(401);  
     });
+    
     it('should return 403 if user is not an admin', async () => {
       const token = new User({ admin: false }).generateAuthToken();
       const user_id = '1';
@@ -225,6 +226,7 @@ describe('/api/users', () => {
 
       expect(res.status).toBe(403);
     });
+
     it('should return 404 if invalid ID', async () => {
       const token = new User({ admin: true }).generateAuthToken();
       const user_id = '1';
@@ -232,6 +234,7 @@ describe('/api/users', () => {
 
       expect(res.status).toBe(404);
     });
+
     it('should return 404 if id valid but ID not in DB', async () => {
       const user = new User({ 
         name: 'bob', 
@@ -246,6 +249,7 @@ describe('/api/users', () => {
       
       expect(res.status).toBe(404);      
     });
+
     it('should delete user if input is valid', async () => {
       const user = new User({ 
         name: 'bob', 
@@ -254,14 +258,14 @@ describe('/api/users', () => {
         password_digest: '123456'
       });
       await user.save();
-      const user_id = user._id;
       const token = user.generateAuthToken();
       
-      const res = await response(user_id, token); 
-      const result = await User.findById(user_id);
+      const res = await response(user._id, token); 
+      const result = await User.findById(user._id);
 
       expect(result).toBeNull();
     });
+
     it('should return deleted user', async () => {
       const user = new User({ 
         name: 'bob', 
@@ -270,9 +274,8 @@ describe('/api/users', () => {
         password_digest: '123456' 
       });
       await user.save();
-      const user_id = user._id;
       const token = user.generateAuthToken();
-      const res = await response(user_id, token); 
+      const res = await response(user._id, token); 
       
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('_id', user._id.toHexString());
