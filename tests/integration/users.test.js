@@ -13,18 +13,24 @@ describe('/api/users', () => {
   });
 
   describe('GET /', () => {
+    const response = async (jwt) => {
+      return await request(server)
+        .get('/api/users')
+        .set('x-auth-token', jwt);
+    };
+
     it('should return 401 if client not logged in', async () => {
-      const res = await request(server).get('/api/users');
+      const token = '';
+      const res = await response(token);
+
       expect(res.status).toBe(401);
     });
 
     it('should return 403 if user is not admin', async () => {
       const token = new User({ admin: false }).generateAuthToken();
-      const res = await request(server)
-                  .get('/api/users')
-                  .set('x-auth-token', token);
-      expect(res.status).toBe(403);
+      const res = await response(token);
 
+      expect(res.status).toBe(403);
     });
 
     it('should return all users (stat code 200)', async () => {
@@ -33,43 +39,63 @@ describe('/api/users', () => {
         { name: 'tom' , email: 'tom@example.com' }
       ]
       await User.collection.insertMany(users);
+
       const token = new User({ admin: true }).generateAuthToken();
-      const res = await request(server)
-                  .get('/api/users')
-                  .set('x-auth-token', token);
+      const res = await response(token);
+
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(2);
       expect(res.body.some(u => u.name === 'bob')).toBeTruthy();
       expect(res.body.some(u => u.email === 'bob@example.com')).toBeTruthy();
       expect(res.body.some(u => u.name === 'tom')).toBeTruthy();
       expect(res.body.some(u => u.email === 'tom@example.com')).toBeTruthy();
-
     });
   });
 
   describe('POST /', () => {
+    const response = async (object) => {
+      return await request(server)
+        .post('/api/users')
+        .send(object);
+    };
 
     it('should return 400 if user is invalid', async () => {
-      const res = await request(server)
-            .post('/api/users')
-            .send({name: '', email: 'bob@example.com', password: '123'});
+      user_object = {
+        name: '', 
+        email: 'bob@example.com', 
+        password: '123'
+      };
+      const res = await response(user_object);
+      
       expect(res.status).toBe(400);
     });
 
     it('should return 400 if user exists already', async () => {
-      const first_user = new User({name: 'bob' , email: 'bob@example.com', password_digest: '123456'});
+      const first_user = new User({
+        name: 'bob', 
+        email: 'bob@example.com', 
+        password_digest: '123456'
+      });
       await first_user.save();
-      const res = await request(server)
-            .post('/api/users')
-            .send({name: 'bob' , email: 'bob@example.com', password: '123456'});
+      user_object = { 
+        name: 'bob', 
+        email: 'bob@example.com', 
+        password: '123456' 
+      };
+      const res = await response(user_object);
+
       expect(res.status).toBe(400);  
     });
 
     it('should save user if user is valid', async () => {
-      const res = await request(server)
-            .post('/api/users')
-            .send({name: 'bob' , email: 'bob@example.com', password: '123456'});
+      user_object = { 
+        name: 'bob', 
+        email: 'bob@example.com', 
+        password: '123456' 
+      };
+      const res = await response(user_object);
       const user = await User.findOne({ name: 'bob' });
+
       expect(user).toHaveProperty('_id');
       expect(user).toHaveProperty('name', 'bob');
       expect(user).toHaveProperty('email', 'bob@example.com');
@@ -77,24 +103,40 @@ describe('/api/users', () => {
     });
 
     it('should return jwt if user is valid', async () => {
-      const res = await request(server)
-            .post('/api/users')
-            .send({name: 'bob' , email: 'bob@example.com', password: '123456'});
+      user_object = { 
+        name: 'bob', 
+        email: 'bob@example.com', 
+        password: '123456'
+      };      
+      const res = await response(user_object);
+
       expect(res.header).toHaveProperty('x-auth-token');
     });
   });
 
   describe('GET /ME', () => {
+    const response = async (jwt) => {
+      return await request(server)
+        .get('/api/users/me')
+        .set('x-auth-token', jwt);
+    };
+
     it('should return 401 if client not logged in', async () => {
-      const res = await request(server).get('/api/users/me');
+      const token = '';
+      const res = await response(token);
       expect(res.status).toBe(401);
     });
+
     it('should return specific user if valid ID', async () => {
-      const user = new User({ name: 'bob' , email: 'bob@example.com' , password_digest: '123456'});
-      const token = user.generateAuthToken();
+      const user = new User({ 
+        name: 'bob', 
+        email: 'bob@example.com', 
+        password_digest: '123456'
+      });
       await user.save();
-      
-      const res = await request(server).get('/api/users/me').set('x-auth-token', token);
+      const token = user.generateAuthToken();
+      const res = await response(token);
+
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('name', user.name);
       expect(res.body).toHaveProperty('email', user.email);
@@ -102,30 +144,60 @@ describe('/api/users', () => {
   });
 
   describe('PUT /ME', () => {
+    const response = async (object, jwt) => {
+      return await request(server)
+        .put('/api/users/me')
+        .set('x-auth-token', jwt)
+        .send(object);
+    };
+
     it('should return 401 if client not logged in', async () => {
-      const res = await request(server).put('/api/users/me');
+      const user_object = { 
+        name: 'bob', 
+        email: 'bob@example.com', 
+        password_digest: '123456'
+      };
+      const token = '';
+      const res = await response(user_object, token);
+
       expect(res.status).toBe(401);      
     });
+
     it('should return 400 if user is invalid', async () => {
-      const user = new User({ name: 'bob' , email: 'bob@example.com' , password_digest: '123456'});
-      const token = user.generateAuthToken();
+      const user = new User({ 
+        name: 'bob', 
+        email: 'bob@example.com', 
+        password_digest: '123456'});
       await user.save();
-      const res = await request(server).put('/api/users/me').set('x-auth-token', token).send({ name: ''});
+      const token = user.generateAuthToken();
+      const user_object = { name: '' };
+      const res = await response(user_object, token);
+      
       expect(res.status).toBe(400); 
     });
+
     it('should update user if input is valid', async () => {
-      const user = new User({ name: 'bob' , email: 'bob@example.com' , password_digest: '123456'});
-      const token = user.generateAuthToken();
+      const user = new User({ 
+        name: 'bob' , 
+        email: 'bob@example.com', 
+        password_digest: '123456'
+      });
       await user.save();
-      const res = await request(server).put('/api/users/me').set('x-auth-token', token).send({ name: 'binky', email: 'binky@badbunny.com'});
+      const token = user.generateAuthToken();
+      const user_object = { name: 'binky', email: 'binky@badbunny.com'}
+      const res = await response(user_object, token);
       const result = await User.findById(user.id);
+      
       expect(result).toHaveProperty('name', 'binky');
     });
+
     it('should return updated user if it is valid', async () => {
       const user = new User({ name: 'bob' , email: 'bob@example.com' , password_digest: '123456'});
       const token = user.generateAuthToken();
       await user.save();
-      const res = await request(server).put('/api/users/me').set('x-auth-token', token).send({ name: 'binky', email: 'binky@badbunny.com'});
+      const user_object = { name: 'binky', email: 'binky@badbunny.com'}
+      const res = await response(user_object, token);
+      
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('name', 'binky');
       expect(res.body).toHaveProperty('email', 'binky@badbunny.com');
@@ -133,60 +205,79 @@ describe('/api/users', () => {
   });
 
   describe('DELETE /ID', () => {
+    const response = async (id, jwt) => {
+      return await request(server)
+        .delete('/api/users/' + id)
+        .set('x-auth-token', jwt); 
+    };
+
     it('should return 401 if client not logged in', async () => {
-      const res = await request(server).delete('/api/users/1');
+      const token = '';
+      const user_id = '1';
+      const res = await response(user_id, token);
+
       expect(res.status).toBe(401);  
     });
     it('should return 403 if user is not an admin', async () => {
       const token = new User({ admin: false }).generateAuthToken();
-      const res = await request(server)
-                  .delete('/api/users/1')
-                  .set('x-auth-token', token);
+      const user_id = '1';
+      const res = await response(user_id, token);
+
       expect(res.status).toBe(403);
     });
     it('should return 404 if invalid ID', async () => {
       const token = new User({ admin: true }).generateAuthToken();
-      const res = await request(server)
-                  .delete('/api/users/1')
-                  .set('x-auth-token', token); 
+      const user_id = '1';
+      const res = await response(user_id, token);
+
       expect(res.status).toBe(404);
     });
     it('should return 404 if id valid but ID not in DB', async () => {
-      const id = mongoose.Types.ObjectId();
-      const user = new User({ name: 'bob' , email: 'bob@example.com', admin: true, password_digest: '123456'});
+      const user = new User({ 
+        name: 'bob', 
+        email: 'bob@example.com', 
+        admin: true, 
+        password_digest: '123456'
+      });
       await user.save();
+      const user_id = mongoose.Types.ObjectId();
       const token = user.generateAuthToken();
-
-      const res = await request(server)
-                  .delete('/api/users/' + id)
-                  .set('x-auth-token', token); 
+      const res = await response(user_id, token); 
+      
       expect(res.status).toBe(404);      
     });
     it('should delete user if input is valid', async () => {
-      const user = new User({ name: 'bob' , email: 'bob@example.com', admin: true, password_digest: '123456'});
-      const id = user._id;
+      const user = new User({ 
+        name: 'bob', 
+        email: 'bob@example.com', 
+        admin: true, 
+        password_digest: '123456'
+      });
       await user.save();
+      const user_id = user._id;
       const token = user.generateAuthToken();
-      const res = await request(server)
-                  .delete('/api/users/' + id)
-                  .set('x-auth-token', token); 
       
-      const result = await User.findById(id);
+      const res = await response(user_id, token); 
+      const result = await User.findById(user_id);
+
       expect(result).toBeNull();
     });
     it('should return deleted user', async () => {
-      const user = new User({ name: 'bob' , email: 'bob@example.com', admin: true, password_digest: '123456' });
-      const id = user._id;
+      const user = new User({ 
+        name: 'bob', 
+        email: 'bob@example.com', 
+        admin: true, 
+        password_digest: '123456' 
+      });
       await user.save();
+      const user_id = user._id;
       const token = user.generateAuthToken();
-      const res = await request(server)
-                  .delete('/api/users/' + id)
-                  .set('x-auth-token', token); 
+      const res = await response(user_id, token); 
+      
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('_id', user._id.toHexString());
       expect(res.body).toHaveProperty('name', user.name);
       expect(res.body).toHaveProperty('email', user.email);
     });
   });
-
 });
