@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const request = require('supertest');
-const mongooose = require('mongoose');
+const mongoose = require('mongoose');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const validateObjectId = require('../middleware/objectId_validation');
@@ -15,6 +15,10 @@ router.get('/', auth, async (req, res) => {
 });
 
 router.post('/', [auth, admin], async (req, res) => { 
+  if (!mongoose.Types.ObjectId.isValid(req.body.muscle)) {
+    return res.status(400).send('Invalid Muscle ID');
+  }
+
   const muscle = await Muscle.findById(req.body.muscle);
   if (!muscle) return res.status(400).send('Invalid Muscle');
 
@@ -43,6 +47,10 @@ router.get('/:id', [auth, admin, validateObjectId], async (req, res) => {
 router.put('/:id', [auth, admin, validateObjectId], async (req, res) => { 
   let exercise = await Exercise.findById(req.params.id);
   if (!exercise) return res.status(404).send('Exercise with submitted ID not found');
+
+  if (!mongoose.Types.ObjectId.isValid(req.body.muscle)) {
+    return res.status(400).send('Invalid Muscle ID');
+  }
 
   const muscle = await Muscle.findById(req.body.muscle);
   if (!muscle) return res.status(400).send('Invalid Muscle');

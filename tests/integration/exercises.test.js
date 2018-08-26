@@ -23,7 +23,7 @@ describe('/api/users', () => {
     };
 
     beforeEach(async() => {
-      muscle = new Muscle({ name: 'abs' });
+      muscle = new Muscle({ name: 'chest' });
       await muscle.save();
       exercises = [
           { name: 'chest fly' , muscle: muscle.id }, 
@@ -90,7 +90,7 @@ describe('/api/users', () => {
     });
 
     it('should return 400 if invalid muscleID', async () => {
-      exercise_object = { name: 'bench press', muscle: null };
+      exercise_object = { name: 'bench press', muscle: '1' };
       const res = await response(exercise_object, token);
       
       expect(res.status).toBe(400);
@@ -227,7 +227,7 @@ describe('/api/users', () => {
     });
 
     it('should return 400 if invalid muscleID ', async () => {
-      updated_exercise = { name: 'crunches', muscle: null };
+      updated_exercise = { name: 'crunches', muscle: '1' };
       const res = await response(updated_exercise, token, exercise._id);
 
       expect(res.status).toBe(400); 

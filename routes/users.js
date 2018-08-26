@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const mongooose = require('mongoose');
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const config = require('config');
 const jwt = require('jsonwebtoken');
@@ -47,7 +47,7 @@ router.get('/me', auth, async (req, res) => {
 });
 
 router.put('/me', auth, async (req, res) => {
-  // TODO: 
+  // To do: 
   // 1. add ability to update password. Don't forget to update token if password is updated.
   // 2. add ability to update a single property
 

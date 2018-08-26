@@ -5,16 +5,44 @@ const mongoose = require('mongoose');
 let server;
 
 describe('/api/users', () => {
-  // beforeEach(() => { server = require('../../index'); })
-  // afterEach(async () => {
-  //   await server.close();
-  //   await Workout.remove({});
-  //   await User.remove({});
-  // });
+  beforeEach(() => { server = require('../../index'); })
+  afterEach(async () => {
+    await server.close();
+    await Workout.deleteMany({});
+    await Exercise.deleteMany({});
+    await User.deleteMany({});
+  });
 
   describe('GET /', () => {
-    it('should return 401 if client not logged in', async () => {});
-    it('should return all workouts for current user (stat code 200)', async () => {});
+    let muscle, exercises, token;
+    
+    const response = async (jwt) => {
+      return await request(server)
+        .get('/api/workouts')
+        .set('x-auth-token', jwt);
+    };
+
+    beforeEach(async() => {
+      muscle = new Muscle({ name: 'chest' });
+      await muscle.save();
+      exercises = [
+          { name: 'chest fly' , muscle: muscle.id }, 
+          { name: 'bench press', muscle: muscle.id }
+        ];
+      await Exercise.collection.insertMany(exercises);
+
+      workout = new Workout({ });
+
+      token = new User().generateAuthToken();
+    });
+
+    it('should return 401 if client not logged in', async () => {
+
+    });
+
+    it('should return all workouts for current user (stat code 200)', async () => {
+
+    });
   });
 
   describe('POST /', () => {
