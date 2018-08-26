@@ -23,11 +23,13 @@ router.get('/:workoutId/completed_exercises/', auth, async (req, res) => {
     .find() // Problem: can't get .find({ workouts: workout.id }) to work   
     .populate('name', 'name -_id') // Insert names from Exercise documents
     .sort('name');
-  completed_exercises
+  
+  // Work around for above problem: 
+  completed_exercises = completed_exercises.filter(item => item.workout == workout.id);
 
   res.send(completed_exercises);
-  console.log(completed_exercises);
-  console.log(req.params.workoutId);
+  // console.log(completed_exercises);
+  // console.log(req.params.workoutId);
 });
 
 module.exports = router;
