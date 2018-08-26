@@ -28,15 +28,15 @@ describe('/api/muscles', () => {
     });
 
     it('should return all muscles (stat code 200)', async () => {
-      const muscles = [ { name: 'abs' }, { name: 'quads' }]
+      const muscles = [ { name: 'abs' }, { name: 'quads' }];
       await Muscle.collection.insertMany(muscles);
       const token = new User({ admin: false }).generateAuthToken();
       const res = await response(token);
       
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(2);
-      expect(res.body.some(u => u.name === 'abs')).toBeTruthy();
-      expect(res.body.some(u => u.name === 'quads')).toBeTruthy();
+      expect(res.body.some(m => m.name === 'abs')).toBeTruthy();
+      expect(res.body.some(m => m.name === 'quads')).toBeTruthy();
     });
   });
 
@@ -50,7 +50,7 @@ describe('/api/muscles', () => {
 
     it('should return 401 if client not logged in', async () => {
       const token = '';
-      const user_object = { name: 'abs' }
+      const user_object = { name: 'abs' };
       const res = await response(user_object, token);
       
       expect(res.status).toBe(401);
@@ -58,7 +58,7 @@ describe('/api/muscles', () => {
 
     it('should return 403 if user is not admin', async () => {
       const token = new User({ admin: false }).generateAuthToken();
-      const user_object = { name: 'abs' }
+      const user_object = { name: 'abs' };
       const res = await response(user_object, token);
 
       expect(res.status).toBe(403);      
@@ -71,9 +71,10 @@ describe('/api/muscles', () => {
 
       expect(res.status).toBe(400);
     });
+
     it('should save muscle if muscle is valid', async () => {
       const token = new User({ admin: true }).generateAuthToken();
-      const user_object = { name: 'abs' }
+      const user_object = { name: 'abs' };
       const res = await response(user_object, token);
       const muscle = await Muscle.findOne({ name: 'abs' });
 
@@ -83,7 +84,7 @@ describe('/api/muscles', () => {
 
     it('should return muscle if muscle is valid', async () => {
       const token = new User({ admin: true }).generateAuthToken();
-      const user_object = { name: 'abs' }
+      const user_object = { name: 'abs' };
       const res = await response(user_object, token);
 
       expect(res.status).toBe(200);
@@ -280,5 +281,4 @@ describe('/api/muscles', () => {
       expect(res.body).toHaveProperty('name', muscle.name);
     });
   });
-
 });

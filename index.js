@@ -32,7 +32,7 @@ app.use(express.json());
 app.use('/api/users', users);
 //app.use('/api/workouts', workouts);
 // app.use('/api/completed_exercises', completed_exercises);
-// app.use('/api/exercises', exercises);
+app.use('/api/exercises', exercises);
 app.use('/api/muscles', muscles);
 // app.use('/api/login', login);
 // app.use('/api/logout', logout);

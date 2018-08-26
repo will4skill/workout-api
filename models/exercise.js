@@ -10,7 +10,8 @@ const exerciseSchema = new mongoose.Schema({
   },
   muscle: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Muscle'
+    ref: 'Muscle',
+    required: true
   }
 });
 
