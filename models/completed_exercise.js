@@ -22,6 +22,9 @@ const completedExerciseSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  weight: {
+    type: Number
+  },
   mum: {
     type: Boolean,
     default: false
