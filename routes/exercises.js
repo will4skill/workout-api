@@ -15,16 +15,16 @@ router.get('/', auth, async (req, res) => {
 });
 
 router.post('/', [auth, admin], async (req, res) => { 
-  if (!mongoose.Types.ObjectId.isValid(req.body.muscle)) {
+  if (!mongoose.Types.ObjectId.isValid(req.body.muscle_id)) {
     return res.status(400).send('Invalid Muscle ID');
   }
 
-  const muscle = await Muscle.findById(req.body.muscle);
+  const muscle = await Muscle.findById(req.body.muscle_id);
   if (!muscle) return res.status(400).send('Invalid Muscle');
 
   const exercise = new Exercise({ 
     name: req.body.name, 
-    muscle: req.body.muscle 
+    muscle_id: req.body.muscle_id 
   });
   
   try { 
@@ -48,16 +48,16 @@ router.put('/:id', [auth, admin, validateObjectId], async (req, res) => {
   let exercise = await Exercise.findById(req.params.id);
   if (!exercise) return res.status(404).send('Exercise with submitted ID not found');
 
-  if (!mongoose.Types.ObjectId.isValid(req.body.muscle)) {
+  if (!mongoose.Types.ObjectId.isValid(req.body.muscle_id)) {
     return res.status(400).send('Invalid Muscle ID');
   }
 
-  const muscle = await Muscle.findById(req.body.muscle);
+  const muscle = await Muscle.findById(req.body.muscle_id);
   if (!muscle) return res.status(400).send('Invalid Muscle');
 
   try {
       exercise = await Exercise.findByIdAndUpdate(req.params.id , 
-      { name: req.body.name, muscle: req.body.muscle }, 
+      { name: req.body.name, muscle_id: req.body.muscle_id }, 
       { new: true, runValidators: true });
       res.send(exercise);
   } catch(err) {

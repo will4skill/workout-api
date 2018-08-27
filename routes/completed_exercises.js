@@ -11,25 +11,65 @@ const Muscle = require('../models/muscle');
 const Workout = require('../models/workout');
 const User = require('../models/user');
 
-router.get('/:workoutId/completed_exercises/', auth, async (req, res) => { 
-  if (!mongoose.Types.ObjectId.isValid(req.params.workoutId)) {
-    return res.status(400).send('Invalid Workout ID');
-  }
+router.get('/', auth, async (req, res) => { 
+  let completed_exercises = await CompletedExercise.find().sort('name')
+    .populate('exercise_id', 'name -_id')
+    .populate({ path: 'workout_id', select: '-_id'
+    });
 
-  const workout = await Workout.findById(req.params.workoutId);
-  if (!workout) return res.status(400).send('Invalid Workout ID');
-
-  let completed_exercises = await CompletedExercise
-    .find() // Problem: can't get .find({ workouts: workout.id }) to work   
-    .populate('name', 'name -_id') // Insert names from Exercise documents
-    .sort('name');
-  
-  // Work around for above problem: 
-  completed_exercises = completed_exercises.filter(item => item.workout == workout.id);
+  // Return all completed exercises for current user (multiple workouts possible)
+  // ** To do: filter with CompletedExercise.find() instead. **
+  completed_exercises = completed_exercises.filter(item => item.workout_id.user_id == req.user._id);
 
   res.send(completed_exercises);
-  // console.log(completed_exercises);
-  // console.log(req.params.workoutId);
 });
+
+router.get('/:id', [auth, validateObjectId], async (req, res) => { 
+  const completed_exercise = await CompletedExercise.findById(req.params.id)
+    .populate('exercise_id', 'name -_id');
+  if (!completed_exercise) {
+    res.status(404).send('Completed exercise with submitted ID not found');
+  } else {
+    res.send(completed_exercise);
+  }
+});
+
+router.put('/:id', [auth, validateObjectId], async (req, res) => { 
+  let completed_exercise = await CompletedExercise.findById(req.params.id);
+  if (!completed_exercise) return res.status(404).send('Completed exercise with submitted ID not found');
+
+  if (!mongoose.Types.ObjectId.isValid(req.body.exercise_id)) {
+    return res.status(400).send('Invalid Exercise ID');
+  }
+  const exercise = await Exercise.findById(req.body.exercise_id);
+  if (!exercise) return res.status(400).send('Invalid Exercise');
+
+  const workout_id = completed_exercise.workout_id;
+
+  try {
+      completed_exercise = await CompletedExercise.findByIdAndUpdate(req.params.id , 
+      { 
+        exercise_id: req.body.exercise_id,
+        sets: req.body.sets,
+        reps: req.body.reps, 
+        workout_id: workout_id 
+      }, 
+      { new: true, runValidators: true });
+      res.send(completed_exercise);
+  } catch(err) {
+    res.status(400).send(err);
+  }
+});
+
+router.delete('/:id', [auth, validateObjectId], async (req, res) => { 
+  const completed_exercise = await CompletedExercise.findByIdAndRemove(req.params.id)
+    .populate('exercise_id', 'name -_id');
+  if (!completed_exercise) {
+    res.status(404).send('Completed exercise with submitted ID not found');
+  } else {
+    res.send(completed_exercise);
+  }
+});
+
 
 module.exports = router;

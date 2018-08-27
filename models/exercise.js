@@ -8,7 +8,7 @@ const exerciseSchema = new mongoose.Schema({
     maxlength: 50,
     required: true
   },
-  muscle: {
+  muscle_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Muscle',
     required: true

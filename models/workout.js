@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const User = require('./user');
 
 const workoutSchema = new mongoose.Schema({
-  user: {
+  user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }

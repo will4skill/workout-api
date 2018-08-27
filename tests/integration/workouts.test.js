@@ -1,41 +1,22 @@
+const CompletedExercise = require('../../models/completed_exercise');
+const Exercise = require('../../models/exercise');
+const Muscle = require('../../models/muscle');
 const Workout = require('../../models/workout');
 const User = require('../../models/user');
 const request = require('supertest');
 const mongoose = require('mongoose');
 let server;
 
-describe('/api/users', () => {
+describe('/api/workouts', () => {
   beforeEach(() => { server = require('../../index'); })
   afterEach(async () => {
     await server.close();
-    await Workout.deleteMany({});
+    await Muscle.deleteMany({});
     await Exercise.deleteMany({});
-    await User.deleteMany({});
+    await CompletedExercise.deleteMany({});
   });
 
   describe('GET /', () => {
-    let muscle, exercises, token;
-    
-    const response = async (jwt) => {
-      return await request(server)
-        .get('/api/workouts')
-        .set('x-auth-token', jwt);
-    };
-
-    beforeEach(async() => {
-      muscle = new Muscle({ name: 'chest' });
-      await muscle.save();
-      exercises = [
-          { name: 'chest fly' , muscle: muscle.id }, 
-          { name: 'bench press', muscle: muscle.id }
-        ];
-      await Exercise.collection.insertMany(exercises);
-
-      workout = new Workout({ });
-
-      token = new User().generateAuthToken();
-    });
-
     it('should return 401 if client not logged in', async () => {
 
     });
@@ -55,10 +36,74 @@ describe('/api/users', () => {
   });
 
   describe('GET /ID', () => {
-    it('should return 401 if client not logged in', async () => {});
-    it('should return 404 if invalid workout ID', async () => {});
-    it('should return 404 if workoutID valid but workoutID not in DB', async () => {});
-    it('should return specific workout if valid workoutID', async () => {});
+    let user, token, muscle, exercise_1, exercise_2, 
+    workout, other_workout, completed_exercises;
+
+    const response = async (w_id, jwt) => {
+      return await request(server)
+        .get('/api/workouts/' + w_id)
+        .set('x-auth-token', jwt);
+    };
+
+    beforeEach(async() => {
+      user = new User({ name: "bob", email: "bob@example.com", password_digest: "123" });
+      token = user.generateAuthToken();
+      muscle = new Muscle({ name: 'chest' });
+      exercise_1 = new Exercise({ name: 'chest fly' , muscle_id: muscle._id });
+      exercise_2 = new Exercise({ name: 'bench press' , muscle_id: muscle._id });
+      await exercise_1.save();
+      await exercise_2.save();
+      workout = new Workout({ user_id: user._id });
+      other_workout = new Workout({ user_id: user._id });
+      await workout.save();
+      await other_workout.save();
+      completed_exercises = [
+          { exercise_id: exercise_1._id, sets: 4, reps: 8, workout_id: workout._id }, 
+          { exercise_id: exercise_2._id, sets: 4, reps: 12, workout_id: workout._id },
+          { exercise_id: exercise_2._id, sets: 4, reps: 12, workout_id: other_workout._id }
+        ];
+      await CompletedExercise.collection.insertMany(completed_exercises);
+    });
+    afterEach(async () => {
+      await CompletedExercise.deleteMany({});
+      await Exercise.deleteMany({});
+      await Workout.deleteMany({});
+    });
+
+    it('should return 401 if client not logged in', async () => {
+      token = '';
+      const res = await response(workout._id, token);
+
+      expect(res.status).toBe(401);
+    });
+
+    it('should return 400 if invalid workoutID', async () => {
+      const workout_id = 1;
+      const res = await response(workout_id, token);
+      
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 if workoutID valid but workoutID not in DB', async () => {
+      const workout_id = mongoose.Types.ObjectId();
+      const res = await response(workout_id, token)
+      
+      expect(res.status).toBe(400);
+    });
+
+    it('should return all completed_exercises for current workout (stat code 200)', async () => {
+      const res = await response(workout._id, token);
+      
+      expect(res.status).toBe(200);
+      expect(res.body.length).toBe(2);
+      expect(res.body.some(w => w.exercise_id.name === 'chest fly')).toBeTruthy();
+      expect(res.body.some(w => w.exercise_id.name === 'bench press')).toBeTruthy();
+      expect(res.body.some(w => w.sets === 4)).toBeTruthy();
+      expect(res.body.some(w => w.reps === 8)).toBeTruthy();
+      expect(res.body.some(w => w.reps === 12)).toBeTruthy();
+      expect(res.body.some(w => w.workout_id === workout.id)).toBeTruthy();
+      expect(res.body.some(w => w.workout_id === other_workout.id)).toBeFalsy();
+    });
   });
 
   describe('PUT /ID', () => {
@@ -80,5 +125,14 @@ describe('/api/users', () => {
   });
 
 });
+
+
+
+
+
+
+
+
+
 
 

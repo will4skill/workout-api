@@ -4,12 +4,12 @@ const Workout = require('./workout');
 const Exercise = require('./exercise');
 
 const completedExerciseSchema = new mongoose.Schema({
-  workout: {
+  workout_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Workout',
     required: true
   },
-  name: {
+  exercise_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Exercise',
     required: true
