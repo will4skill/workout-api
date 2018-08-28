@@ -11,32 +11,32 @@ const Muscle = require('../models/muscle');
 const Workout = require('../models/workout');
 const User = require('../models/user');
 
-router.get('/', auth, async (req, res) => { 
-  let completed_exercises = await CompletedExercise.find().sort('name')
-    .populate('exercise_id', 'name -_id')
-    .populate({ path: 'workout_id', select: '-_id'
-    });
-
-  // Return all completed exercises for current user (multiple workouts possible)
-  // ** To do: filter with CompletedExercise.find() instead. **
-  completed_exercises = completed_exercises.filter(item => item.workout_id.user_id == req.user._id);
-
-  res.send(completed_exercises);
-});
-
 router.get('/:id', [auth, validateObjectId], async (req, res) => { 
   const completed_exercise = await CompletedExercise.findById(req.params.id)
-    .populate('exercise_id', 'name -_id');
+    .populate('exercise_id', 'name -_id')
+    .populate('workout_id', '-__v');
+
   if (!completed_exercise) {
     res.status(404).send('Completed exercise with submitted ID not found');
-  } else {
-    res.send(completed_exercise);
+  } else { // Check for current user
+    if (req.user._id !== (completed_exercise.workout_id.user_id).toString()) {
+      res.status(403).send('Forbidden');
+    } else {
+      res.send(completed_exercise);
+    }
   }
 });
 
 router.put('/:id', [auth, validateObjectId], async (req, res) => { 
-  let completed_exercise = await CompletedExercise.findById(req.params.id);
-  if (!completed_exercise) return res.status(404).send('Completed exercise with submitted ID not found');
+  let completed_exercise = await CompletedExercise.findById(req.params.id)
+      .populate('workout_id', '-__v');
+  if (!completed_exercise) {
+    res.status(404).send('Completed exercise with submitted ID not found');
+  } else { // Check for current user
+    if (req.user._id !== (completed_exercise.workout_id.user_id).toString()) {
+      res.status(403).send('Forbidden');
+    }
+  }
 
   if (!mongoose.Types.ObjectId.isValid(req.body.exercise_id)) {
     return res.status(400).send('Invalid Exercise ID');
@@ -62,14 +62,21 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
 });
 
 router.delete('/:id', [auth, validateObjectId], async (req, res) => { 
-  const completed_exercise = await CompletedExercise.findByIdAndRemove(req.params.id)
-    .populate('exercise_id', 'name -_id');
+  let completed_exercise = await CompletedExercise.findById(req.params.id)
+    .populate('exercise_id', 'name -_id')
+    .populate('workout_id', '-__v');
+  
   if (!completed_exercise) {
     res.status(404).send('Completed exercise with submitted ID not found');
-  } else {
-    res.send(completed_exercise);
+  } else { // Check for current user
+    if (req.user._id !== (completed_exercise.workout_id.user_id).toString()) {
+      res.status(403).send('Forbidden');
+    } else {
+      completed_exercise = await CompletedExercise.findByIdAndRemove(req.params.id)
+        .populate('exercise_id', 'name -_id');
+      res.send(completed_exercise);
+    }
   }
 });
-
 
 module.exports = router;

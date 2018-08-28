@@ -16,13 +16,14 @@ describe('/api/completed_exercises', () => {
     await CompletedExercise.deleteMany({});
   });
 
-  describe('GET /', () => {
-    let user, other_user, token, muscle, exercise_1, exercise_2, 
-    workout_1, workout_2, other_workout, completed_exercises;
+  describe('GET /ID', () => {
+    let user, token, muscle, exercise, 
+    workout, other_workout, completed_exercise,
+    other_exercise;
 
-    const response = async (jwt) => {
+    const response = async (c_id, jwt) => {
       return await request(server)
-        .get('/api/completed_exercises')
+        .get('/api/completed_exercises/' + c_id)
         .set('x-auth-token', jwt);
     };
 
@@ -33,23 +34,26 @@ describe('/api/completed_exercises', () => {
       other_user = new User({ name: "binky", email: "bad@bunny.com", password_digest: "123456" });
       await other_user.save();
       muscle = new Muscle({ name: 'chest' });
-      exercise_1 = new Exercise({ name: 'chest fly' , muscle_id: muscle._id });
-      exercise_2 = new Exercise({ name: 'bench press' , muscle_id: muscle._id });
-      await exercise_1.save();
-      await exercise_2.save();
-      workout_1 = new Workout({ user_id: user._id });
-      workout_2 = new Workout({ user_id: user._id });
+      exercise = new Exercise({ name: 'bench press' , muscle_id: muscle._id });
+      await exercise.save();
+      workout = new Workout({ user_id: user._id });
       other_workout = new Workout({ user_id: other_user._id });
-      await workout_1.save();
-      await workout_2.save();
+      await workout.save();
       await other_workout.save();
-      completed_exercises = [
-          { exercise_id: exercise_1._id, sets: 4, reps: 8, workout_id: workout_1._id }, 
-          { exercise_id: exercise_2._id, sets: 4, reps: 12, workout_id: workout_2._id },
-          { exercise_id: exercise_2._id, sets: 4, reps: 12, workout_id: workout_2._id },
-          { exercise_id: exercise_2._id, sets: 100, reps: 100, workout_id: other_workout._id }         
-        ];
-      await CompletedExercise.collection.insertMany(completed_exercises);
+      completed_exercise = new CompletedExercise({ 
+        exercise_id: exercise._id, 
+        sets: 4, 
+        reps: 8, 
+        workout_id: workout._id 
+      });
+      await completed_exercise.save();
+      other_exercise = new CompletedExercise({ 
+        exercise_id: exercise._id, 
+        sets: 4, 
+        reps: 8, 
+        workout_id: other_workout._id 
+      });
+      await other_exercise.save();
     });
     afterEach(async () => {
       await CompletedExercise.deleteMany({});
@@ -60,68 +64,15 @@ describe('/api/completed_exercises', () => {
 
     it('should return 401 if client not logged in', async () => {
       token = '';
-      const res = await response(token);
-
-      expect(res.status).toBe(401);
-    });
-
-    it('should return all completed_exercises for current user only (stat code 200)', async () => {
-      const res = await response(token);
-
-      expect(res.status).toBe(200);
-      expect(res.body.length).toBe(3);
-      expect(res.body.some(c => c.exercise_id.name === 'chest fly')).toBeTruthy();
-      expect(res.body.some(c => c.exercise_id.name === 'bench press')).toBeTruthy();
-      expect(res.body.some(c => c.sets === 4)).toBeTruthy();
-      expect(res.body.some(c => c.reps === 8)).toBeTruthy();
-      expect(res.body.some(c => c.reps === 12)).toBeTruthy();
-      expect(res.body.some(c => c.workout_id.user_id === user.id)).toBeTruthy();
-      expect(res.body.some(c => c.workout_id.user_id === other_user.id)).toBeFalsy();
-    });
-  });
-
-  describe('GET /ID', () => {
-    let user, token, muscle, exercise, 
-    workout, completed_exercise;
-
-    const response = async (c_id, jwt) => {
-      return await request(server)
-        .get('/api/completed_exercises/' + c_id)
-        .set('x-auth-token', jwt);
-    };
-
-    beforeEach(async() => {
-      user = new User({ name: "bob", email: "bob@example.com", password_digest: "123" });
-      token = user.generateAuthToken();
-      muscle = new Muscle({ name: 'chest' });
-      exercise = new Exercise({ name: 'bench press' , muscle_id: muscle._id });
-      await exercise.save();
-      workout = new Workout({ user: user._id });
-      await workout.save();
-      completed_exercise = new CompletedExercise({ 
-        exercise_id: exercise._id, 
-        sets: 4, 
-        reps: 8, 
-        workout_id: workout._id 
-      });
-      await completed_exercise.save();
-    });
-    afterEach(async () => {
-      await CompletedExercise.deleteMany({});
-      await Exercise.deleteMany({});
-      await Workout.deleteMany({});
-    });
-
-    it('should return 401 if client not logged in', async () => {
-      token = '';
       const res = await response(completed_exercise._id, token);
 
       expect(res.status).toBe(401);
     });
 
-    // it('should return 403 if user is not current user (userID from JWT)', async () => {
-
-    // });
+    it('should return 403 if user is not current user (userID from JWT)', async () => {
+      const res = await response(other_exercise._id, token);
+      expect(res.status).toBe(403);
+    });
 
     it('should return 404 if invalid completed_exercise ID', async () => {
       const completed_exercise_id = 1;
@@ -148,7 +99,8 @@ describe('/api/completed_exercises', () => {
 
   describe('PUT /ID', () => {
     let user, token, muscle, exercise_1, exercise_2, 
-    workout, completed_exercise, object;
+    workout, completed_exercise, object, other_workout, 
+    other_exercise;
 
     const response = async (object, c_id, jwt) => {
       return await request(server)
@@ -158,15 +110,20 @@ describe('/api/completed_exercises', () => {
     };
 
     beforeEach(async() => {
-      user = new User({ name: "bob", email: "bob@example.com", password_digest: "123" });
+      user = new User({ name: "bob", email: "bob@example.com", password_digest: "123456" });
+      await user.save();
       token = user.generateAuthToken();
+      other_user = new User({ name: "binky", email: "bad@bunny.com", password_digest: "123456" });
+      await other_user.save();
       muscle = new Muscle({ name: 'chest' });
       exercise_1 = new Exercise({ name: 'chest fly' , muscle_id: muscle._id });
       exercise_2 = new Exercise({ name: 'bench press' , muscle_id: muscle._id });
       await exercise_1.save();
       await exercise_2.save();
-      workout = new Workout({ user: user._id });
+      workout = new Workout({ user_id: user._id });
+      other_workout = new Workout({ user_id: other_user._id });
       await workout.save();
+      await other_workout.save();
       completed_exercise = new CompletedExercise({ 
         exercise_id: exercise_1._id, 
         sets: 4, 
@@ -174,6 +131,13 @@ describe('/api/completed_exercises', () => {
         workout_id: workout._id 
       });
       await completed_exercise.save();
+      other_exercise = new CompletedExercise({ 
+        exercise_id: exercise_1._id, 
+        sets: 4, 
+        reps: 8, 
+        workout_id: other_workout._id 
+      });
+      await other_exercise.save();
       updated_exercise = { exercise_id: exercise_2._id, sets: 3, reps: 12, workout_id: workout._id };
       
     });
@@ -181,6 +145,7 @@ describe('/api/completed_exercises', () => {
       await CompletedExercise.deleteMany({});
       await Exercise.deleteMany({});
       await Workout.deleteMany({});
+      await User.deleteMany({});
     });
 
     it('should return 401 if client not logged in', async () => {
@@ -190,9 +155,10 @@ describe('/api/completed_exercises', () => {
       expect(res.status).toBe(401);
     });
 
-    // it('should return 403 if user is not current user (userID from JWT)', async () => {
-
-    // });
+    it('should return 403 if user is not current user (userID from JWT)', async () => {
+      const res = await response(updated_exercise, other_exercise._id, token);
+      expect(res.status).toBe(403);      
+    });
 
     it('should return 404 if invalid completed_exerciseID', async () => {
       const completed_exercise_id = 1;
@@ -255,7 +221,8 @@ describe('/api/completed_exercises', () => {
 
   describe('DELETE /ID', () => {
     let user, token, muscle, exercise, 
-    workout, completed_exercises;
+    workout, other_workout, completed_exercise,
+    other_exercise;
 
     const response = async (c_id, jwt) => {
       return await request(server)
@@ -264,13 +231,18 @@ describe('/api/completed_exercises', () => {
     };
 
     beforeEach(async() => {
-      user = new User({ name: "bob", email: "bob@example.com", password_digest: "123" });
+      user = new User({ name: "bob", email: "bob@example.com", password_digest: "123456" });
+      await user.save();
       token = user.generateAuthToken();
+      other_user = new User({ name: "binky", email: "bad@bunny.com", password_digest: "123456" });
+      await other_user.save();
       muscle = new Muscle({ name: 'chest' });
       exercise = new Exercise({ name: 'bench press' , muscle_id: muscle._id });
       await exercise.save();
-      workout = new Workout({ user: user._id });
+      workout = new Workout({ user_id: user._id });
+      other_workout = new Workout({ user_id: other_user._id });
       await workout.save();
+      await other_workout.save();
       completed_exercise = new CompletedExercise({ 
         exercise_id: exercise._id, 
         sets: 4, 
@@ -278,11 +250,19 @@ describe('/api/completed_exercises', () => {
         workout_id: workout._id 
       });
       await completed_exercise.save();
+      other_exercise = new CompletedExercise({ 
+        exercise_id: exercise._id, 
+        sets: 4, 
+        reps: 8, 
+        workout_id: other_workout._id 
+      });
+      await other_exercise.save();
     });
     afterEach(async () => {
       await CompletedExercise.deleteMany({});
       await Exercise.deleteMany({});
       await Workout.deleteMany({});
+      await User.deleteMany({});
     });
 
     it('should return 401 if client not logged in', async () => {
@@ -292,9 +272,10 @@ describe('/api/completed_exercises', () => {
       expect(res.status).toBe(401);
     });
 
-    // it('should return 403 if user is not current user (userID from JWT)', async () => {
-
-    // });
+    it('should return 403 if user is not current user (userID from JWT)', async () => {
+      const res = await response(other_exercise._id, token);
+      expect(res.status).toBe(403);
+    });
 
     it('should return 404 if invalid completed_exerciseID', async () => {
       const completed_exercise_id = 1;
@@ -326,14 +307,3 @@ describe('/api/completed_exercises', () => {
     });
   });
 });
-
-
-// describe('POST /', () => {
-//   it('should return 401 if client not logged in', async () => {});
-//   it('should return 400 if completed_exercise is invalid', async () => {});
-//   it('should save completed_exercise if completed_exercise is valid [* Workout -> CompletedExercise *]', async () => {
-//     //    a. completed_exercise should have an associated workout
-//   });
-//   it('should return completed_exercise if completed_exercise is valid', async () => {});
-// });
-
