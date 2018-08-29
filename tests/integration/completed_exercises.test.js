@@ -42,16 +42,16 @@ describe('/api/completed_exercises', () => {
       await other_workout.save();
       completed_exercise = new CompletedExercise({ 
         exercise_id: exercise._id, 
+        workout_id: workout._id,
         sets: 4, 
-        reps: 8, 
-        workout_id: workout._id 
+        reps: 8
       });
       await completed_exercise.save();
       other_exercise = new CompletedExercise({ 
         exercise_id: exercise._id, 
+        workout_id: other_workout._id,
         sets: 4, 
         reps: 8, 
-        workout_id: other_workout._id 
       });
       await other_exercise.save();
     });
@@ -98,9 +98,9 @@ describe('/api/completed_exercises', () => {
   });
 
   describe('PUT /ID', () => {
-    let user, token, muscle, exercise_1, exercise_2, 
+    let user, other_user, token, muscle, exercise_1, exercise_2, 
     workout, completed_exercise, object, other_workout, 
-    other_exercise;
+    other_exercise, updated_exercise;
 
     const response = async (object, c_id, jwt) => {
       return await request(server)
@@ -126,19 +126,25 @@ describe('/api/completed_exercises', () => {
       await other_workout.save();
       completed_exercise = new CompletedExercise({ 
         exercise_id: exercise_1._id, 
+        workout_id: workout._id,
         sets: 4, 
         reps: 8, 
-        workout_id: workout._id 
       });
       await completed_exercise.save();
       other_exercise = new CompletedExercise({ 
-        exercise_id: exercise_1._id, 
+        exercise_id: exercise_1._id,
+        workout_id: other_workout._id, 
         sets: 4, 
         reps: 8, 
-        workout_id: other_workout._id 
       });
       await other_exercise.save();
-      updated_exercise = { exercise_id: exercise_2._id, sets: 3, reps: 12, workout_id: workout._id };
+      updated_exercise = { 
+        exercise_id: exercise_2._id, 
+        workout_id: workout._id,
+        sets: 3, 
+        reps: 12, 
+        weight: 225
+      };
       
     });
     afterEach(async () => {
@@ -202,9 +208,11 @@ describe('/api/completed_exercises', () => {
 
       expect(saved_exercise).toHaveProperty('_id', completed_exercise._id);
       expect(saved_exercise).toHaveProperty('exercise_id', exercise_2._id);
+      expect(saved_exercise).toHaveProperty('workout_id', workout._id);
       expect(saved_exercise).toHaveProperty('sets', 3);
       expect(saved_exercise).toHaveProperty('reps', 12);
-      expect(saved_exercise).toHaveProperty('workout_id', workout._id);
+      expect(saved_exercise).toHaveProperty('weight', 225);
+      expect(saved_exercise).toHaveProperty('mum', false);
     });
 
     it('should return updated completed_exercise if it is valid', async () => {
@@ -213,9 +221,11 @@ describe('/api/completed_exercises', () => {
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('_id', completed_exercise.id); 
       expect(res.body).toHaveProperty('exercise_id', exercise_2.id); 
+      expect(res.body).toHaveProperty('workout_id', workout.id); 
       expect(res.body).toHaveProperty('sets', 3);
       expect(res.body).toHaveProperty('reps', 12);
-      expect(res.body).toHaveProperty('workout_id', workout.id);       
+      expect(res.body).toHaveProperty('weight', 225);    
+      expect(res.body).toHaveProperty('mum', false);   
     });
   });
 
@@ -245,16 +255,16 @@ describe('/api/completed_exercises', () => {
       await other_workout.save();
       completed_exercise = new CompletedExercise({ 
         exercise_id: exercise._id, 
+        workout_id: workout._id,
         sets: 4, 
         reps: 8, 
-        workout_id: workout._id 
       });
       await completed_exercise.save();
       other_exercise = new CompletedExercise({ 
         exercise_id: exercise._id, 
+        workout_id: other_workout._id,
         sets: 4, 
         reps: 8, 
-        workout_id: other_workout._id 
       });
       await other_exercise.save();
     });

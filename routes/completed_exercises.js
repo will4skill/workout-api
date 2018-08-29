@@ -44,15 +44,15 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
   const exercise = await Exercise.findById(req.body.exercise_id);
   if (!exercise) return res.status(400).send('Invalid Exercise');
 
-  const workout_id = completed_exercise.workout_id;
-
   try {
       completed_exercise = await CompletedExercise.findByIdAndUpdate(req.params.id , 
       { 
         exercise_id: req.body.exercise_id,
+        workout_id: completed_exercise.workout_id,
         sets: req.body.sets,
         reps: req.body.reps, 
-        workout_id: workout_id 
+        weight: req.body.weight || completed_exercise.mum,
+        mum: req.body.mum || completed_exercise.mum
       }, 
       { new: true, runValidators: true });
       res.send(completed_exercise);

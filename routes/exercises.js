@@ -16,7 +16,7 @@ router.get('/', auth, async (req, res) => {
 
 router.post('/', [auth, admin], async (req, res) => { 
   if (!mongoose.Types.ObjectId.isValid(req.body.muscle_id)) {
-    return res.status(400).send('Invalid Muscle ID');
+    res.status(400).send('Invalid Muscle ID');
   }
 
   const muscle = await Muscle.findById(req.body.muscle_id);
@@ -49,7 +49,7 @@ router.put('/:id', [auth, admin, validateObjectId], async (req, res) => {
   if (!exercise) return res.status(404).send('Exercise with submitted ID not found');
 
   if (!mongoose.Types.ObjectId.isValid(req.body.muscle_id)) {
-    return res.status(400).send('Invalid Muscle ID');
+    res.status(400).send('Invalid Muscle ID');
   }
 
   const muscle = await Muscle.findById(req.body.muscle_id);

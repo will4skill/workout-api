@@ -16,14 +16,18 @@ const completedExerciseSchema = new mongoose.Schema({
   },
   sets: {
     type: Number,
+    min: 1,
     required: true
   },
   reps: {
     type: Number,
+    min: 1,
     required: true
   },
   weight: {
-    type: Number
+    type: Number,
+    min: 0,
+    default: 0
   },
   mum: {
     type: Boolean,

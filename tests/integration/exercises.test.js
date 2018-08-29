@@ -260,7 +260,7 @@ describe('/api/users', () => {
       const res = await response(updated_exercise, token, exercise._id);
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('_id'); 
+      expect(res.body).toHaveProperty('_id', exercise.id); 
       expect(res.body).toHaveProperty('name', 'crunches'); 
       expect(res.body).toHaveProperty('muscle_id', new_muscle._id.toHexString()); 
     });

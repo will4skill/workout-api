@@ -19,13 +19,30 @@ router.get('/', auth, async (req, res) => {
   // Return all completed exercises for current user (multiple workouts possible)
   // ** To do: filter with CompletedExercise.find() instead. **
   completed_exercises = completed_exercises.filter(item => item.workout_id.user_id == req.user._id);
-  console.log(completed_exercises);
+  //console.log(completed_exercises);
   res.send(completed_exercises);
+});
+
+router.post('/', auth, async (req, res) => { 
+  let workout = new Workout({ date: req.body.date, user_id: req.user._id });
+  
+  try { 
+    workout = await workout.save();
+    res.send(workout);
+  } catch (err) {
+    res.status(400).send(err);
+  } 
 });
 
 router.get('/:id', [auth, validateObjectId], async (req, res) => { 
   const workout = await Workout.findById(req.params.id);
-  if (!workout) return res.status(404).send('Invalid Workout ID');
+  if (!workout) {
+    res.status(404).send('Workout with submitted ID not found');
+  } else { // Check for current user
+    if (req.user._id !== (workout.user_id).toString()) {
+      res.status(403).send('Forbidden');
+    }
+  }
 
   let completed_exercises = await CompletedExercise
     .find() // Problem: can't get .find({ workouts: workout.id }) to work   
@@ -39,56 +56,73 @@ router.get('/:id', [auth, validateObjectId], async (req, res) => {
   res.send(completed_exercises);
 });
 
-router.post('/', auth, async (req, res) => { 
-  // if (!mongoose.Types.ObjectId.isValid(req.body.muscle_id)) {
-  //   return res.status(400).send('Invalid Muscle ID');
-  // }
-
-  // const muscle = await Muscle.findById(req.body.muscle_id);
-  // if (!muscle) return res.status(400).send('Invalid Muscle');
-
-  // const exercise = new Exercise({ 
-  //   name: req.body.name, 
-  //   muscle_id: req.body.muscle_id 
-  // });
-  
-  // try { 
-  //   await exercise.save();
-  //   res.send(exercise);
-  // } catch (err) {
-  //   res.status(400).send(err);
-  // } 
-});
-
 router.put('/:id', [auth, validateObjectId], async (req, res) => { 
   let workout = await Workout.findById(req.params.id);
-  if (!workout) return res.status(404).send('Workout with submitted ID not found');
+  if (!workout) {
+    res.status(404).send('Workout with submitted ID not found');
+  } else { // Check for current user
+    if (req.user._id !== (workout.user_id).toString()) {
+      res.status(403).send('Forbidden');
+    }
+  }
 
-  // if (!mongoose.Types.ObjectId.isValid(req.body.muscle_id)) {
-  //   return res.status(400).send('Invalid Muscle ID');
-  // }
-
-  // const muscle = await Muscle.findById(req.body.muscle_id);
-  // if (!muscle) return res.status(400).send('Invalid Muscle');
-
-  // try {
-  //     exercise = await Exercise.findByIdAndUpdate(req.params.id , 
-  //     { name: req.body.name, muscle_id: req.body.muscle_id }, 
-  //     { new: true, runValidators: true });
-  //     res.send(exercise);
-  // } catch(err) {
-  //   res.status(400).send(err);
-  // }
+  try {
+      workout = await Workout.findByIdAndUpdate(req.params.id, 
+      { date: req.body.date, user_id: req.user._id }, 
+      { new: true, runValidators: true });
+      res.send(workout);
+  } catch(err) {
+    res.status(400).send(err);
+  }
 });
 
 router.delete('/:id', [auth, validateObjectId], async (req, res) => { 
-  let workout = await Workout.findByIdAndRemove(req.params.id);
+  let workout = await Workout.findById(req.params.id);
   if (!workout) {
     res.status(404).send('Workout with submitted ID not found');
-  } else {
-    const comp_ex = await CompletedExercise.deleteMany({ workout_id: workout._id }); // Delete associated completed_workouts
-    res.send(workout); // Potential update: return removed completed_workouts
+  } else { // Check for current user
+    if (req.user._id !== (workout.user_id).toString()) {
+      res.status(403).send('Forbidden');
+    } else {
+      // Delete associated completed_workouts
+      workout = await Workout.findByIdAndRemove(req.params.id);
+      await CompletedExercise.deleteMany({ workout_id: workout._id }); 
+      res.send(workout); // Potential update: return removed completed_workouts
+    } 
   }
+});
+
+router.post('/:id/completed_exercises/', auth, async (req, res) => { 
+  const workout = await Workout.findById(req.params.id);
+  if (!workout) {
+    res.status(404).send('Workout with submitted ID not found');
+  } else { // Check for current user
+    if (req.user._id !== (workout.user_id).toString()) {
+      res.status(403).send('Forbidden');
+    }
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(req.body.exercise_id)) {
+    res.status(400).send('Invalid Exercise ID');
+  }
+  const exercise = await Exercise.findById(req.body.exercise_id);
+  if (!exercise) return res.status(400).send('Invalid Exercise');
+  
+  let completed_exercise = new CompletedExercise({ 
+    exercise_id: req.body.exercise_id,
+    workout_id: req.params.id,
+    sets: req.body.sets,
+    reps: req.body.reps, 
+    weight: req.body.weight || 0,
+    mum: req.body.mum || false
+  });
+
+  try { 
+    completed_exercise = await completed_exercise.save();
+    res.send(completed_exercise);
+  } catch (err) {
+    res.status(400).send(err);
+  } 
 });
 
 module.exports = router;
