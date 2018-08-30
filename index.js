@@ -34,8 +34,8 @@ app.use('/api/workouts', workouts);
 app.use('/api/completed_exercises', completed_exercises);
 app.use('/api/exercises', exercises);
 app.use('/api/muscles', muscles);
-// app.use('/api/login', login);
-// app.use('/api/logout', logout);
+app.use('/api/login', login);
+app.use('/api/logout', logout);
 app.use(error); // express default error handler
 // ** Express Routes: End ******************************************************
 

@@ -5,7 +5,7 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 let server;
 
-describe('/api/users', () => {
+describe('/api/exercises', () => {
   beforeEach(() => { server = require('../../index'); })
   afterEach(async () => {
     await server.close();
