@@ -8,9 +8,9 @@ let server;
 describe('/api/exercises', () => {
   beforeEach(() => { server = require('../../index'); })
   afterEach(async () => {
-    await server.close();
     await Exercise.deleteMany({});
     await Muscle.deleteMany({});
+    await server.close();
   });
 
   describe('GET /', () => {

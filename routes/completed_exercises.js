@@ -31,10 +31,10 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
   let completed_exercise = await CompletedExercise.findById(req.params.id)
       .populate('workout_id', '-__v');
   if (!completed_exercise) {
-    res.status(404).send('Completed exercise with submitted ID not found');
+    return res.status(404).send('Completed exercise with submitted ID not found');
   } else { // Check for current user
     if (req.user._id !== (completed_exercise.workout_id.user_id).toString()) {
-      res.status(403).send('Forbidden');
+      return res.status(403).send('Forbidden');
     }
   }
 

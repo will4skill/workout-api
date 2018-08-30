@@ -37,10 +37,10 @@ router.post('/', auth, async (req, res) => {
 router.get('/:id', [auth, validateObjectId], async (req, res) => { 
   const workout = await Workout.findById(req.params.id);
   if (!workout) {
-    res.status(404).send('Workout with submitted ID not found');
+    return res.status(404).send('Workout with submitted ID not found');
   } else { // Check for current user
     if (req.user._id !== (workout.user_id).toString()) {
-      res.status(403).send('Forbidden');
+      return res.status(403).send('Forbidden');
     }
   }
 
@@ -59,10 +59,10 @@ router.get('/:id', [auth, validateObjectId], async (req, res) => {
 router.put('/:id', [auth, validateObjectId], async (req, res) => { 
   let workout = await Workout.findById(req.params.id);
   if (!workout) {
-    res.status(404).send('Workout with submitted ID not found');
+    return res.status(404).send('Workout with submitted ID not found');
   } else { // Check for current user
     if (req.user._id !== (workout.user_id).toString()) {
-      res.status(403).send('Forbidden');
+      return res.status(403).send('Forbidden');
     }
   }
 
@@ -79,10 +79,10 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
 router.delete('/:id', [auth, validateObjectId], async (req, res) => { 
   let workout = await Workout.findById(req.params.id);
   if (!workout) {
-    res.status(404).send('Workout with submitted ID not found');
+    return res.status(404).send('Workout with submitted ID not found');
   } else { // Check for current user
     if (req.user._id !== (workout.user_id).toString()) {
-      res.status(403).send('Forbidden');
+      return res.status(403).send('Forbidden');
     } else {
       // Delete associated completed_workouts
       workout = await Workout.findByIdAndRemove(req.params.id);
@@ -95,15 +95,15 @@ router.delete('/:id', [auth, validateObjectId], async (req, res) => {
 router.post('/:id/completed_exercises/', auth, async (req, res) => { 
   const workout = await Workout.findById(req.params.id);
   if (!workout) {
-    res.status(404).send('Workout with submitted ID not found');
+    return res.status(404).send('Workout with submitted ID not found');
   } else { // Check for current user
     if (req.user._id !== (workout.user_id).toString()) {
-      res.status(403).send('Forbidden');
+      return res.status(403).send('Forbidden');
     }
   }
 
   if (!mongoose.Types.ObjectId.isValid(req.body.exercise_id)) {
-    res.status(400).send('Invalid Exercise ID');
+    return res.status(400).send('Invalid Exercise ID');
   }
   const exercise = await Exercise.findById(req.body.exercise_id);
   if (!exercise) return res.status(400).send('Invalid Exercise');

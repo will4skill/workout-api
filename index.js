@@ -4,8 +4,8 @@ const winston = require('winston');
 const config = require('config');
 require('express-async-errors'); // replaces try-catch blocks in route handlers
 const mongoose = require('mongoose');
-const Joi = require('joi');
-Joi.objectId = require('joi-objectid')(Joi); // Add ObjectID validation to joi
+// const Joi = require('joi');
+// Joi.objectId = require('joi-objectid')(Joi); // Add ObjectID validation to joi
 
 // ** Node Error Logging: Start ************************************************
 const logger = winston.createLogger({
@@ -25,7 +25,6 @@ const completed_exercises = require('./routes/completed_exercises');
 const exercises = require('./routes/exercises');
 const muscles = require('./routes/muscles');
 const login = require('./routes/login');
-const logout = require('./routes/logout');
 const error = require('./middleware/error');
 
 app.use(express.json());
@@ -35,7 +34,6 @@ app.use('/api/completed_exercises', completed_exercises);
 app.use('/api/exercises', exercises);
 app.use('/api/muscles', muscles);
 app.use('/api/login', login);
-app.use('/api/logout', logout);
 app.use(error); // express default error handler
 // ** Express Routes: End ******************************************************
 

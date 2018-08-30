@@ -15,26 +15,26 @@ router.get('/', [auth, admin], async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const name = req.body.name;
-  const email = req.body.email;
   const password = req.body.password;
   const salt = await bcrypt.genSalt(10);
   const password_digest = await bcrypt.hash(password, salt);
   
-  let user = new User({ name: name, email: email, password_digest: password_digest});
+  let user = new User({ 
+    name: req.body.name, 
+    email: req.body.email, 
+    password_digest: password_digest
+  });
   const found_user = await User.findOne({ email: req.body.email });
 
-  if (found_user){ 
-    return res.status(400).send('Email exists already'); 
-  }
+  if (found_user) return res.status(400).send('Email exists already');
   
   try { 
     await user.save();
     const token = user.generateAuthToken();
     res.header('x-auth-token', token).send({
       id: user._id,
-      name: user.name,
-      email: user.email
+      name: req.body.name,
+      email: req.body.email
     });
   } catch (err) {
     res.status(400).send(err);
@@ -67,7 +67,7 @@ router.put('/me', auth, async (req, res) => {
 router.delete('/:id', [auth, admin, validateObjectId], async (req, res) => {
   const user = await User.findByIdAndRemove(req.params.id);
   if (!user) {
-    return res.status(404).send('User ID not found');
+    res.status(404).send('User ID not found');
   } else {
     res.send(user);
   }

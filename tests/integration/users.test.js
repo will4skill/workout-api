@@ -8,8 +8,8 @@ describe('/api/users', () => {
     server = require('../../index'); 
   })
   afterEach(async () => {
-    await server.close();
     await User.deleteMany({});
+    await server.close();
   });
 
   describe('GET /', () => {
