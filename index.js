@@ -49,7 +49,9 @@ if (config.has('jwt_private_key') == false) {
 // ** Private Key Setup: End ***************************************************
 
 // ** Server Setup: Start ******************************************************
-const port = process.env.PORT || 3000;
-const server = app.listen(port, () => logger.info(`Listening on port ${port}...`));
-module.exports = server; // Export for use in tests
+if (process.env.NODE_ENV !== 'test') {
+  const port = process.env.PORT || 3000;
+  const server = app.listen(port, () => logger.info(`Listening on port ${port}...`));
+}
+module.exports = app; // Export for use in tests
 // ** Server Setup: End ********************************************************

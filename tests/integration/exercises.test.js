@@ -1,23 +1,27 @@
 const Exercise = require('../../models/exercise');
 const Muscle = require('../../models/muscle');
 const User = require('../../models/user');
-const request = require('supertest');
+const server = require('../../index');
+const request = require('supertest')(server);
 const mongoose = require('mongoose');
-let server;
 
 describe('/api/exercises', () => {
-  beforeEach(() => { server = require('../../index'); })
   afterEach(async () => {
     await Exercise.deleteMany({});
     await Muscle.deleteMany({});
-    await server.close();
+  });
+
+  afterAll(() => {
+    mongoose.connection.db.dropDatabase(() => {
+      mongoose.connection.close();
+    });
   });
 
   describe('GET /', () => {
     let muscle, exercises, token;
     
     const response = async (jwt) => {
-      return await request(server)
+      return await request
         .get('/api/exercises')
         .set('x-auth-token', jwt);
     };
@@ -55,7 +59,7 @@ describe('/api/exercises', () => {
     let token, muscle, exercise_object;
 
     const response = async (object, jwt) => {
-      return await request(server)
+      return await request
         .post('/api/exercises')
         .send(object)
         .set('x-auth-token', jwt);
@@ -126,7 +130,7 @@ describe('/api/exercises', () => {
   describe('GET /ID', () => {
     let token, muscle, exercise;
     const response = async (id, jwt) => {
-      return await request(server)
+      return await request
         .get('/api/exercises/' + id)
         .set('x-auth-token', jwt); 
     };
@@ -181,7 +185,7 @@ describe('/api/exercises', () => {
     let token, muscle, new_muscle, exercise, updated_exercise;
 
     const response = async (object, jwt, id) => {
-      return await request(server)
+      return await request
         .put('/api/exercises/' + id)
         .set('x-auth-token', jwt)
         .send(object);
@@ -269,7 +273,7 @@ describe('/api/exercises', () => {
   describe('DELETE /ID', () => {
     let token, muscle, exercise;
     const response = async (id, jwt) => {
-      return await request(server)
+      return await request
         .delete('/api/exercises/' + id)
         .set('x-auth-token', jwt); 
     };

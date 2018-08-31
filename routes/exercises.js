@@ -8,7 +8,6 @@ const validateObjectId = require('../middleware/objectId_validation');
 const Muscle = require('../models/muscle');
 const Exercise = require('../models/exercise');
 
-
 router.get('/', auth, async (req, res) => { 
   const exercises = await Exercise.find().sort('name');
   res.send(exercises);

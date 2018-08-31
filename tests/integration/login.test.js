@@ -1,14 +1,18 @@
 const User = require('../../models/user');
-const request = require('supertest');
+const server = require('../../index');
+const request = require('supertest')(server);
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-let server;
 
 describe('/api/login', () => {
-  beforeEach(() => { server = require('../../index'); })
   afterEach(async () => {
     await User.deleteMany({});
-    await server.close();
+  });
+
+  afterAll(() => {
+    mongoose.connection.db.dropDatabase(() => {
+      mongoose.connection.close();
+    });
   });
 
   describe('POST /', () => {
@@ -16,7 +20,7 @@ describe('/api/login', () => {
     digest, user_object;
 
     const response = async (object) => {
-      return await request(server)
+      return await request
         .post('/api/login')
         .send(object);
     };

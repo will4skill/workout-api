@@ -1,20 +1,22 @@
 const User = require('../../models/user');
-const request = require('supertest');
+const server = require('../../index');
+const request = require('supertest')(server);
 const mongoose = require('mongoose');
-let server;
 
 describe('/api/users', () => {
-  beforeEach(() => { 
-    server = require('../../index'); 
-  })
   afterEach(async () => {
     await User.deleteMany({});
-    await server.close();
+  });
+
+  afterAll(() => {
+    mongoose.connection.db.dropDatabase(() => {
+      mongoose.connection.close();
+    });
   });
 
   describe('GET /', () => {
     const response = async (jwt) => {
-      return await request(server)
+      return await request
         .get('/api/users')
         .set('x-auth-token', jwt);
     };
@@ -54,7 +56,7 @@ describe('/api/users', () => {
 
   describe('POST /', () => {
     const response = async (object) => {
-      return await request(server)
+      return await request
         .post('/api/users')
         .send(object);
     };
@@ -116,7 +118,7 @@ describe('/api/users', () => {
 
   describe('GET /ME', () => {
     const response = async (jwt) => {
-      return await request(server)
+      return await request
         .get('/api/users/me')
         .set('x-auth-token', jwt);
     };
@@ -145,7 +147,7 @@ describe('/api/users', () => {
 
   describe('PUT /ME', () => {
     const response = async (object, jwt) => {
-      return await request(server)
+      return await request
         .put('/api/users/me')
         .set('x-auth-token', jwt)
         .send(object);
@@ -206,7 +208,7 @@ describe('/api/users', () => {
 
   describe('DELETE /ID', () => {
     const response = async (id, jwt) => {
-      return await request(server)
+      return await request
         .delete('/api/users/' + id)
         .set('x-auth-token', jwt); 
     };

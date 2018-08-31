@@ -1,21 +1,23 @@
 const Muscle = require('../../models/muscle');
 const User = require('../../models/user');
-const request = require('supertest');
+const server = require('../../index');
+const request = require('supertest')(server);
 const mongoose = require('mongoose');
-let server;
 
 describe('/api/muscles', () => {
-  beforeEach(() => { 
-    server = require('../../index'); 
-  })
   afterEach(async () => {
     await Muscle.deleteMany({});
-    await server.close();
+  });
+
+  afterAll(() => {
+    mongoose.connection.db.dropDatabase(() => {
+      mongoose.connection.close();
+    });
   });
 
   describe('GET /', () => {
     const response = async (jwt) => {
-      return await request(server)
+      return await request
         .get('/api/muscles')
         .set('x-auth-token', jwt);
     };
@@ -42,7 +44,7 @@ describe('/api/muscles', () => {
 
   describe('POST /', () => {
     const response = async (object, jwt) => {
-      return await request(server)
+      return await request
         .post('/api/muscles')
         .send(object)
         .set('x-auth-token', jwt);
@@ -94,7 +96,7 @@ describe('/api/muscles', () => {
 
   describe('GET /ID', () => {
     const response = async (id, jwt) => {
-      return await request(server)
+      return await request
         .get('/api/muscles/' + id)
         .set('x-auth-token', jwt); 
     };
@@ -145,7 +147,7 @@ describe('/api/muscles', () => {
 
   describe('PUT /ID', () => {
     const response = async (object, jwt, id) => {
-      return await request(server)
+      return await request
         .put('/api/muscles/' + id)
         .set('x-auth-token', jwt)
         .send(object);
@@ -223,7 +225,7 @@ describe('/api/muscles', () => {
 
   describe('DELETE /ID', () => {
     const response = async (id, jwt) => {
-      return await request(server)
+      return await request
         .delete('/api/muscles/' + id)
         .set('x-auth-token', jwt); 
     };

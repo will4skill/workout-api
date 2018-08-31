@@ -3,17 +3,22 @@ const Exercise = require('../../models/exercise');
 const Muscle = require('../../models/muscle');
 const Workout = require('../../models/workout');
 const User = require('../../models/user');
-const request = require('supertest');
+const server = require('../../index');
+const request = require('supertest')(server);
 const mongoose = require('mongoose');
-let server;
 
 describe('/api/completed_exercises', () => {
-  beforeEach(() => { server = require('../../index'); })
   afterEach(async () => {
-    await Muscle.deleteMany({});
-    await Exercise.deleteMany({});
     await CompletedExercise.deleteMany({});
-    await server.close();
+    await Exercise.deleteMany({});
+    await Workout.deleteMany({});
+    await User.deleteMany({});
+  });
+
+  afterAll(() => {
+    mongoose.connection.db.dropDatabase(() => {
+      mongoose.connection.close();
+    });
   });
 
   describe('GET /ID', () => {
@@ -22,7 +27,7 @@ describe('/api/completed_exercises', () => {
     other_exercise;
 
     const response = async (c_id, jwt) => {
-      return await request(server)
+      return await request
         .get('/api/completed_exercises/' + c_id)
         .set('x-auth-token', jwt);
     };
@@ -54,12 +59,6 @@ describe('/api/completed_exercises', () => {
         reps: 8, 
       });
       await other_exercise.save();
-    });
-    afterEach(async () => {
-      await CompletedExercise.deleteMany({});
-      await Exercise.deleteMany({});
-      await Workout.deleteMany({});
-      await User.deleteMany({});
     });
 
     it('should return 401 if client not logged in', async () => {
@@ -103,7 +102,7 @@ describe('/api/completed_exercises', () => {
     other_exercise, updated_exercise;
 
     const response = async (object, c_id, jwt) => {
-      return await request(server)
+      return await request
         .put('/api/completed_exercises/' + c_id)
         .set('x-auth-token', jwt)
         .send(object);
@@ -146,12 +145,6 @@ describe('/api/completed_exercises', () => {
         weight: 225
       };
       
-    });
-    afterEach(async () => {
-      await CompletedExercise.deleteMany({});
-      await Exercise.deleteMany({});
-      await Workout.deleteMany({});
-      await User.deleteMany({});
     });
 
     it('should return 401 if client not logged in', async () => {
@@ -235,7 +228,7 @@ describe('/api/completed_exercises', () => {
     other_exercise;
 
     const response = async (c_id, jwt) => {
-      return await request(server)
+      return await request
         .delete('/api/completed_exercises/' + c_id)
         .set('x-auth-token', jwt);
     };
@@ -267,12 +260,6 @@ describe('/api/completed_exercises', () => {
         reps: 8, 
       });
       await other_exercise.save();
-    });
-    afterEach(async () => {
-      await CompletedExercise.deleteMany({});
-      await Exercise.deleteMany({});
-      await Workout.deleteMany({});
-      await User.deleteMany({});
     });
 
     it('should return 401 if client not logged in', async () => {
