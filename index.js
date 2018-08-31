@@ -6,6 +6,8 @@ require('express-async-errors'); // replaces try-catch blocks in route handlers
 const mongoose = require('mongoose');
 // const Joi = require('joi');
 // Joi.objectId = require('joi-objectid')(Joi); // Add ObjectID validation to joi
+const helmet = require('helmet');
+const compression = require('compression');
 
 // ** Node Error Logging: Start ************************************************
 const logger = winston.createLogger({
@@ -47,6 +49,11 @@ if (config.has('jwt_private_key') == false) {
   throw new Error('FATAL ERROR: jwt_private_key is not defined.');
 }
 // ** Private Key Setup: End ***************************************************
+
+// ** Production Preparation: Start ********************************************
+app.use(helmet());
+app.use(compression());
+// ** Production Preparation: End **********************************************
 
 // ** Server Setup: Start ******************************************************
 if (process.env.NODE_ENV !== 'test') {
