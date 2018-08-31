@@ -1,3 +1,4 @@
 {
-  "jwt_private_key": "workout_api_jwt_private_key"
+  "jwt_private_key": "workout_api_jwt_private_key",
+  "db": "workout_api_db"
 }
