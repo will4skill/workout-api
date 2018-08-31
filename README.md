@@ -23,8 +23,7 @@ This is a simple API that can be used to track a user's workouts. The structure 
 10. Done. You can now use a command line tool like $ curl, or an application like Postman to test the API endpoints.
 
 ## Entity Relationship Diagram
-
-<img src="https://github.com/jtimwill/workout_api/tree/master/images/workout-erd.svg" width="100%">
+![Image of ERD](https://github.com/jtimwill/workout_api/tree/master/images/workout-erd.svg)
 
 
 ## Routes and Resources
