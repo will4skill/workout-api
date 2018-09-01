@@ -22,9 +22,11 @@ This is a simple API that can be used to track a user's workouts. The structure 
 9. $ mongod # run the Mongo daemon
 10. Done. You can now use a command line tool like $ curl, or an application like Postman to test the API endpoints.
 
+## App Structure
+![Image of App Structure](https://raw.github.com/jtimwill/workout_api/master/images/workout-API-diagram.png)
+
 ## Entity Relationship Diagram
 ![Image of ERD](https://raw.github.com/jtimwill/workout_api/master/images/workout-erd.png)
-
 
 ## Routes and Resources
 ### Users Resource
