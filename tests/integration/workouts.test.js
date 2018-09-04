@@ -50,10 +50,10 @@ describe('/api/workouts', () => {
       await workout_2.save();
       await other_workout.save();
       completed_exercises = [
-          { exercise_id: exercise_1._id, sets: 4, reps: 8, workout_id: workout_1._id }, 
-          { exercise_id: exercise_2._id, sets: 4, reps: 12, workout_id: workout_2._id },
-          { exercise_id: exercise_2._id, sets: 4, reps: 12, workout_id: workout_2._id },
-          { exercise_id: exercise_2._id, sets: 100, reps: 100, workout_id: other_workout._id }         
+          { exercise_id: exercise_1._id, exercise_type: 'bodyweight', sets: 4, reps: 8, workout_id: workout_1._id }, 
+          { exercise_id: exercise_2._id, exercise_type: 'free weight', sets: 4, reps: 12, workout_id: workout_2._id },
+          { exercise_id: exercise_2._id, exercise_type: 'cable', sets: 4, reps: 12, workout_id: workout_2._id },
+          { exercise_id: exercise_2._id, exercise_type: 'machine', sets: 100, reps: 100, workout_id: other_workout._id }         
         ];
       await CompletedExercise.collection.insertMany(completed_exercises);
     });
@@ -72,6 +72,10 @@ describe('/api/workouts', () => {
       expect(res.body.length).toBe(3);
       expect(res.body.some(w => w.exercise_id.name === 'chest fly')).toBeTruthy();
       expect(res.body.some(w => w.exercise_id.name === 'bench press')).toBeTruthy();
+      expect(res.body.some(w => w.exercise_type === 'bodyweight')).toBeTruthy();
+      expect(res.body.some(w => w.exercise_type === 'free weight')).toBeTruthy();
+      expect(res.body.some(w => w.exercise_type === 'cable')).toBeTruthy();
+      expect(res.body.some(w => w.exercise_type === 'machine')).toBeFalsy();
       expect(res.body.some(w => w.sets === 4)).toBeTruthy();
       expect(res.body.some(w => w.reps === 8)).toBeTruthy();
       expect(res.body.some(w => w.reps === 12)).toBeTruthy();
@@ -162,9 +166,9 @@ describe('/api/workouts', () => {
       await other_workout.save();
       await diff_user_workout.save();
       completed_exercises = [
-          { exercise_id: exercise_1._id, sets: 4, reps: 8, workout_id: workout._id }, 
-          { exercise_id: exercise_2._id, sets: 4, reps: 12, workout_id: workout._id },
-          { exercise_id: exercise_2._id, sets: 4, reps: 12, workout_id: other_workout._id }
+          { exercise_id: exercise_1._id, exercise_type: 'cable', sets: 4, reps: 8, workout_id: workout._id }, 
+          { exercise_id: exercise_2._id, exercise_type: 'machine',sets: 4, reps: 12, workout_id: workout._id },
+          { exercise_id: exercise_2._id, exercise_type: 'bodyweight',sets: 4, reps: 12, workout_id: other_workout._id }
         ];
       await CompletedExercise.collection.insertMany(completed_exercises);
     });
@@ -202,6 +206,9 @@ describe('/api/workouts', () => {
       expect(res.body.length).toBe(2);
       expect(res.body.some(w => w.exercise_id.name === 'chest fly')).toBeTruthy();
       expect(res.body.some(w => w.exercise_id.name === 'bench press')).toBeTruthy();
+      expect(res.body.some(w => w.exercise_type === 'cable')).toBeTruthy();
+      expect(res.body.some(w => w.exercise_type === 'machine')).toBeTruthy();
+      expect(res.body.some(w => w.exercise_type === 'bodyweight')).toBeFalsy();
       expect(res.body.some(w => w.sets === 4)).toBeTruthy();
       expect(res.body.some(w => w.reps === 8)).toBeTruthy();
       expect(res.body.some(w => w.reps === 12)).toBeTruthy();
@@ -319,9 +326,9 @@ describe('/api/workouts', () => {
       await other_workout.save();
       await diff_user_workout.save();
       completed_exercises = [
-          { exercise_id: exercise_1._id, sets: 4, reps: 8, workout_id: workout._id }, 
-          { exercise_id: exercise_2._id, sets: 4, reps: 12, workout_id: workout._id },
-          { exercise_id: exercise_2._id, sets: 4, reps: 12, workout_id: other_workout._id }
+          { exercise_id: exercise_1._id, exercise_type: 'cable', sets: 4, reps: 8, workout_id: workout._id }, 
+          { exercise_id: exercise_2._id, exercise_type: 'machine', sets: 4, reps: 12, workout_id: workout._id },
+          { exercise_id: exercise_2._id, exercise_type: 'free weight', sets: 4, reps: 12, workout_id: other_workout._id }
         ];
       await CompletedExercise.collection.insertMany(completed_exercises);
     });
@@ -403,6 +410,7 @@ describe('/api/workouts', () => {
       new_exercise = { 
         exercise_id: exercise._id, 
         workout_id: workout._id,
+        exercise_type: 'cable',
         sets: 3, 
         reps: 12, 
         load: 225
@@ -445,7 +453,7 @@ describe('/api/workouts', () => {
 
     it('should return 400 if exerciseID valid but exerciseID not in DB', async () => {
       const exercise_id = mongoose.Types.ObjectId();
-      const new_exercise = { exercise_id: exercise_id, sets: 3, reps: 12, workout_id: workout._id };
+      const new_exercise = { exercise_id: exercise_id, exercise_type: 'cable', sets: 3, reps: 12, workout_id: workout._id };
       const res = await response(new_exercise, workout._id, token);
 
       expect(res.status).toBe(400); 
@@ -469,6 +477,8 @@ describe('/api/workouts', () => {
       expect(saved_exercise).toHaveProperty('_id');
       expect(saved_exercise).toHaveProperty('exercise_id', exercise._id);
       expect(saved_exercise).toHaveProperty('workout_id', workout._id);
+      expect(saved_exercise).toHaveProperty('exercise_type', 'cable');
+      expect(saved_exercise).toHaveProperty('unilateral', false);
       expect(saved_exercise).toHaveProperty('sets', 3);
       expect(saved_exercise).toHaveProperty('reps', 12);
       expect(saved_exercise).toHaveProperty('load', 225);
@@ -482,6 +492,8 @@ describe('/api/workouts', () => {
       expect(res.body).toHaveProperty('_id'); 
       expect(res.body).toHaveProperty('exercise_id', exercise.id); 
       expect(res.body).toHaveProperty('workout_id', workout.id); 
+      expect(res.body).toHaveProperty('exercise_type', 'cable'); 
+      expect(res.body).toHaveProperty('unilateral', false); 
       expect(res.body).toHaveProperty('sets', 3);
       expect(res.body).toHaveProperty('reps', 12);
       expect(res.body).toHaveProperty('load', 225);    
