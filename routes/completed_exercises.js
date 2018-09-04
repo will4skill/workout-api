@@ -49,7 +49,8 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
       { 
         exercise_id: req.body.exercise_id,
         workout_id: completed_exercise.workout_id,
-        machine: req.body.machine || completed_exercise.machine,
+        exercise_type: req.body.exercise_type || completed_exercise.exercise_type,
+        unilateral: req.body.unilateral || completed_exercise.unilateral,
         sets: req.body.sets,
         reps: req.body.reps, 
         load: req.body.load || completed_exercise.load,

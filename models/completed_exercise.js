@@ -16,7 +16,7 @@ const completedExerciseSchema = new mongoose.Schema({
   },
   exercise_type: {
     type: String,
-    enum: ['bodyweight', 'freeweight', 'cable', 'machine'],
+    enum: ['bodyweight', 'free weight', 'cable', 'machine'],
     required: true
   },
   unilateral: {

@@ -48,6 +48,7 @@ describe('/api/completed_exercises', () => {
       completed_exercise = new CompletedExercise({ 
         exercise_id: exercise._id, 
         workout_id: workout._id,
+        exercise_type: 'machine',
         sets: 4, 
         reps: 8
       });
@@ -55,6 +56,7 @@ describe('/api/completed_exercises', () => {
       other_exercise = new CompletedExercise({ 
         exercise_id: exercise._id, 
         workout_id: other_workout._id,
+        exercise_type: 'machine',
         sets: 4, 
         reps: 8, 
       });
@@ -126,6 +128,7 @@ describe('/api/completed_exercises', () => {
       completed_exercise = new CompletedExercise({ 
         exercise_id: exercise_1._id, 
         workout_id: workout._id,
+        exercise_type: 'machine',
         sets: 4, 
         reps: 8, 
       });
@@ -133,6 +136,7 @@ describe('/api/completed_exercises', () => {
       other_exercise = new CompletedExercise({ 
         exercise_id: exercise_1._id,
         workout_id: other_workout._id, 
+        exercise_type: 'machine',
         sets: 4, 
         reps: 8, 
       });
@@ -140,6 +144,8 @@ describe('/api/completed_exercises', () => {
       updated_exercise = { 
         exercise_id: exercise_2._id, 
         workout_id: workout._id,
+        exercise_type: 'free weight',
+        unilateral: true,
         sets: 3, 
         reps: 12, 
         load: 225
@@ -202,6 +208,8 @@ describe('/api/completed_exercises', () => {
       expect(saved_exercise).toHaveProperty('_id', completed_exercise._id);
       expect(saved_exercise).toHaveProperty('exercise_id', exercise_2._id);
       expect(saved_exercise).toHaveProperty('workout_id', workout._id);
+      expect(saved_exercise).toHaveProperty('exercise_type', 'free weight');
+      expect(saved_exercise).toHaveProperty('unilateral', true);
       expect(saved_exercise).toHaveProperty('sets', 3);
       expect(saved_exercise).toHaveProperty('reps', 12);
       expect(saved_exercise).toHaveProperty('load', 225);
@@ -215,6 +223,8 @@ describe('/api/completed_exercises', () => {
       expect(res.body).toHaveProperty('_id', completed_exercise.id); 
       expect(res.body).toHaveProperty('exercise_id', exercise_2.id); 
       expect(res.body).toHaveProperty('workout_id', workout.id); 
+      expect(res.body).toHaveProperty('exercise_type', 'free weight');
+      expect(res.body).toHaveProperty('unilateral', true);
       expect(res.body).toHaveProperty('sets', 3);
       expect(res.body).toHaveProperty('reps', 12);
       expect(res.body).toHaveProperty('load', 225);    
@@ -249,6 +259,7 @@ describe('/api/completed_exercises', () => {
       completed_exercise = new CompletedExercise({ 
         exercise_id: exercise._id, 
         workout_id: workout._id,
+        exercise_type: 'machine',
         sets: 4, 
         reps: 8, 
       });
@@ -256,6 +267,7 @@ describe('/api/completed_exercises', () => {
       other_exercise = new CompletedExercise({ 
         exercise_id: exercise._id, 
         workout_id: other_workout._id,
+        exercise_type: 'machine',
         sets: 4, 
         reps: 8, 
       });
