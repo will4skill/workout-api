@@ -142,7 +142,7 @@ describe('/api/completed_exercises', () => {
         workout_id: workout._id,
         sets: 3, 
         reps: 12, 
-        weight: 225
+        load: 225
       };
       
     });
@@ -204,7 +204,7 @@ describe('/api/completed_exercises', () => {
       expect(saved_exercise).toHaveProperty('workout_id', workout._id);
       expect(saved_exercise).toHaveProperty('sets', 3);
       expect(saved_exercise).toHaveProperty('reps', 12);
-      expect(saved_exercise).toHaveProperty('weight', 225);
+      expect(saved_exercise).toHaveProperty('load', 225);
       expect(saved_exercise).toHaveProperty('mum', false);
     });
 
@@ -217,7 +217,7 @@ describe('/api/completed_exercises', () => {
       expect(res.body).toHaveProperty('workout_id', workout.id); 
       expect(res.body).toHaveProperty('sets', 3);
       expect(res.body).toHaveProperty('reps', 12);
-      expect(res.body).toHaveProperty('weight', 225);    
+      expect(res.body).toHaveProperty('load', 225);    
       expect(res.body).toHaveProperty('mum', false);   
     });
   });

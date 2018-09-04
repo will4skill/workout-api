@@ -405,7 +405,7 @@ describe('/api/workouts', () => {
         workout_id: workout._id,
         sets: 3, 
         reps: 12, 
-        weight: 225
+        load: 225
       };
       
     });
@@ -455,7 +455,7 @@ describe('/api/workouts', () => {
       const new_exercise = { 
         exercise_id: exercise._id, 
         workout_id: workout._id,
-        weight: 225
+        load: 225
       };
       const res = await response(new_exercise, workout._id, token);
 
@@ -471,7 +471,7 @@ describe('/api/workouts', () => {
       expect(saved_exercise).toHaveProperty('workout_id', workout._id);
       expect(saved_exercise).toHaveProperty('sets', 3);
       expect(saved_exercise).toHaveProperty('reps', 12);
-      expect(saved_exercise).toHaveProperty('weight', 225);
+      expect(saved_exercise).toHaveProperty('load', 225);
       expect(saved_exercise).toHaveProperty('mum', false);
     });
 
@@ -484,7 +484,7 @@ describe('/api/workouts', () => {
       expect(res.body).toHaveProperty('workout_id', workout.id); 
       expect(res.body).toHaveProperty('sets', 3);
       expect(res.body).toHaveProperty('reps', 12);
-      expect(res.body).toHaveProperty('weight', 225);    
+      expect(res.body).toHaveProperty('load', 225);    
       expect(res.body).toHaveProperty('mum', false);   
     });
   });

@@ -14,7 +14,12 @@ const completedExerciseSchema = new mongoose.Schema({
     ref: 'Exercise',
     required: true
   },
-  machine: {
+  exercise_type: {
+    type: String,
+    enum: ['bodyweight', 'freeweight', 'cable', 'machine'],
+    required: true
+  },
+  unilateral: {
     type: Boolean,
     default: false
   },
@@ -28,7 +33,7 @@ const completedExerciseSchema = new mongoose.Schema({
     min: 1,
     required: true
   },
-  weight: {
+  load: {
     type: Number,
     min: 0,
     default: 0

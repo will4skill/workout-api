@@ -52,7 +52,7 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
         machine: req.body.machine || completed_exercise.machine,
         sets: req.body.sets,
         reps: req.body.reps, 
-        weight: req.body.weight || completed_exercise.weight,
+        load: req.body.load || completed_exercise.load,
         mum: req.body.mum || completed_exercise.mum
       }, 
       { new: true, runValidators: true });

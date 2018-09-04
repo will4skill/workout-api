@@ -114,7 +114,7 @@ router.post('/:id/completed_exercises/', auth, async (req, res) => {
     machine: req.body.machine || false,
     sets: req.body.sets,
     reps: req.body.reps, 
-    weight: req.body.weight || 0,
+    load: req.body.load || 0,
     mum: req.body.mum || false
   });
 
