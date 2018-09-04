@@ -111,6 +111,7 @@ router.post('/:id/completed_exercises/', auth, async (req, res) => {
   let completed_exercise = new CompletedExercise({ 
     exercise_id: req.body.exercise_id,
     workout_id: req.params.id,
+    machine: req.body.machine || false,
     sets: req.body.sets,
     reps: req.body.reps, 
     weight: req.body.weight || 0,

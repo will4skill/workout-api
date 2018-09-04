@@ -14,6 +14,10 @@ const completedExerciseSchema = new mongoose.Schema({
     ref: 'Exercise',
     required: true
   },
+  machine: {
+    type: Boolean,
+    default: false
+  },
   sets: {
     type: Number,
     min: 1,

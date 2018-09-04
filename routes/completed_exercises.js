@@ -49,9 +49,10 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
       { 
         exercise_id: req.body.exercise_id,
         workout_id: completed_exercise.workout_id,
+        machine: req.body.machine || completed_exercise.machine,
         sets: req.body.sets,
         reps: req.body.reps, 
-        weight: req.body.weight || completed_exercise.mum,
+        weight: req.body.weight || completed_exercise.weight,
         mum: req.body.mum || completed_exercise.mum
       }, 
       { new: true, runValidators: true });
