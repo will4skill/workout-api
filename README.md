@@ -20,7 +20,8 @@ This is a simple API that can be used to track a user's workouts. The structure 
 7. ``` $ npm test <file.name.test.js> ``` # Run tests (for some reason, the tests fail unless the files are tested individually)
 8. ``` $ npm start ``` # start server
 9. ``` $ mongod ``` # run the Mongo daemon
-10. Done. You can now use a command line tool like ``` $ curl ```, or an application like Postman to test the API endpoints.
+10. ``` $ node seed_db ``` # seed the database with muscles and exercises
+11. Done. You can now use a command line tool like ``` $ curl ```, or an application like Postman to test the API endpoints.
 
 ## App Structure
 <p align="center">
