@@ -57,7 +57,7 @@ app.use(compression());
 
 // ** Server Setup: Start ******************************************************
 if (process.env.NODE_ENV !== 'test') {
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || config.get('port');
   const server = app.listen(port, () => logger.info(`Listening on port ${port}...`));
 }
 module.exports = app; // Export for use in tests
