@@ -55,6 +55,11 @@ app.use(helmet());
 app.use(compression());
 // ** Production Preparation: End **********************************************
 
+// ** Enable CORS: Start *******************************************************
+const cors = require('cors');
+app.use(cors());
+// ** Enable CORS: End *********************************************************
+
 // ** Server Setup: Start ******************************************************
 if (process.env.NODE_ENV !== 'test') {
   const port = process.env.PORT || config.get('port');
