@@ -20,6 +20,11 @@ const logger = winston.createLogger({
 process.on('unhandledRejection', (exception) => { throw exception });
 // ** Node Error Logging: End **************************************************
 
+// ** Enable CORS: Start *******************************************************
+const cors = require('cors');
+app.use(cors());
+// ** Enable CORS: End *********************************************************
+
 // ** Express Routes: Start ****************************************************
 const users = require('./routes/users');
 const workouts = require('./routes/workouts');
@@ -54,11 +59,6 @@ if (config.has('jwt_private_key') == false) {
 app.use(helmet());
 app.use(compression());
 // ** Production Preparation: End **********************************************
-
-// ** Enable CORS: Start *******************************************************
-const cors = require('cors');
-app.use(cors());
-// ** Enable CORS: End *********************************************************
 
 // ** Server Setup: Start ******************************************************
 if (process.env.NODE_ENV !== 'test') {
