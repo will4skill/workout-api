@@ -1,5 +1,7 @@
 {
   "jwt_private_key": "",
   "db": "mongodb://localhost/workout_db",
-  "port": "3900"
+  "port": "3900",
+  "adminMiddlewareEnabled": false,
+  "authMiddlewareEnabled": false
 }
