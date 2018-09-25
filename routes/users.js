@@ -31,11 +31,15 @@ router.post('/', async (req, res) => {
   try { 
     await user.save();
     const token = user.generateAuthToken();
-    res.header('x-auth-token', token).send({
-      id: user._id,
-      name: req.body.name,
-      email: req.body.email
-    });
+    res
+      .header('x-auth-token', token)
+      .header('access-control-expose-headers', 'x-auth-token')
+      .send(
+        { 
+          id: user._id, 
+          name: req.body.name, 
+          email: req.body.email
+        });
   } catch (err) {
     res.status(400).send(err);
   } 
