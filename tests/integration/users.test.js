@@ -98,6 +98,7 @@ describe('/api/users', () => {
       const res = await response(user_object);
       const user = await User.findOne({ name: 'bob' });
 
+      expect(res.status).toBe(200);
       expect(user).toHaveProperty('_id');
       expect(user).toHaveProperty('name', 'bob');
       expect(user).toHaveProperty('email', 'bob@example.com');

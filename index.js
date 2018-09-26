@@ -50,7 +50,7 @@ mongoose.connect(db, { useNewUrlParser: true }).then(() => logger.info(`Connecte
 // ** Database Setup: End ******************************************************
 
 // ** Private Key Setup: Start *************************************************
-if (config.has('jwt_private_key') == false) {
+if (!config.get('jwt_private_key')) {
   throw new Error('FATAL ERROR: jwt_private_key is not defined.');
 }
 // ** Private Key Setup: End ***************************************************
