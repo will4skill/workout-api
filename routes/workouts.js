@@ -33,7 +33,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 router.get('/:id', [auth, validateObjectId], async (req, res) => { 
-  const workout = await Workout.findById(req.params.id);
+  const workout = await Workout.findById(req.params.id).lean();
   if (!workout) {
     return res.status(404).send('Workout with submitted ID not found');
   } else { // Check for current user
@@ -42,11 +42,11 @@ router.get('/:id', [auth, validateObjectId], async (req, res) => {
     }
   }
 
-  let completed_exercises = await CompletedExercise
+  workout.exercises = await CompletedExercise
     .find({ workout_id: workout._id })  
     .populate('exercise_id', 'name -_id'); // Insert names from Exercise documents
 
-  res.send(completed_exercises);
+  res.send(workout);
 });
 
 router.put('/:id', [auth, validateObjectId], async (req, res) => { 

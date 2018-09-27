@@ -45,7 +45,7 @@ describe('/api/workouts', () => {
       await exercise_2.save();
       workout_1 = new Workout({ user_id: user._id });
       workout_2 = new Workout({ user_id: user._id });
-      other_workout = new Workout({ user_id: other_user._id });
+      other_workout = new Workout({ date: new Date('September 27, 2018 00:00:00'), user_id: other_user._id });
       await workout_1.save();
       await workout_2.save();
       await other_workout.save();
@@ -67,23 +67,32 @@ describe('/api/workouts', () => {
 
     it('should return all workouts for current user only (stat code 200)', async () => {
       const res = await response(token);
-
+      
       expect(res.status).toBe(200);
-      expect(res.body.length).toBe(3);
-      expect(res.body.some(w => w.exercise_id.name === 'chest fly')).toBeTruthy();
-      expect(res.body.some(w => w.exercise_id.name === 'bench press')).toBeTruthy();
-      expect(res.body.some(w => w.exercise_type === 'bodyweight')).toBeTruthy();
-      expect(res.body.some(w => w.exercise_type === 'free weight')).toBeTruthy();
-      expect(res.body.some(w => w.exercise_type === 'cable')).toBeTruthy();
-      expect(res.body.some(w => w.exercise_type === 'machine')).toBeFalsy();
-      expect(res.body.some(w => w.sets === 4)).toBeTruthy();
-      expect(res.body.some(w => w.reps === 8)).toBeTruthy();
-      expect(res.body.some(w => w.reps === 12)).toBeTruthy();
-      expect(res.body.some(w => w.workout_id.user_id === user.id)).toBeTruthy();
-      expect(res.body.some(w => w.workout_id.user_id === other_user.id)).toBeFalsy();
-      expect(res.body.some(w => w.workout_id._id === workout_1.id)).toBeTruthy();
-      expect(res.body.some(w => w.workout_id._id === workout_2.id)).toBeTruthy();
-      expect(res.body.some(w => w.workout_id._id === other_workout.id)).toBeFalsy();
+
+      expect(res.body.some(w => w._id === workout_1.id)).toBeTruthy();
+      expect(res.body.some(w => w._id === workout_2.id)).toBeTruthy();
+      expect(res.body.some(w => w._id === other_workout.id)).toBeFalsy();
+
+      expect(res.body.some(w => w.date === workout_1.date.toJSON())).toBeTruthy();
+      expect(res.body.some(w => w.date === workout_2.date.toJSON())).toBeTruthy();
+      expect(res.body.some(w => w.date === other_workout.date.toJSON())).toBeFalsy();
+
+      expect(res.body.some(w => w.user_id === workout_1.user_id.toString())).toBeTruthy();
+      expect(res.body.some(w => w.user_id === workout_2.user_id.toString())).toBeTruthy();
+      expect(res.body.some(w => w.user_id === other_workout.user_id.toString())).toBeFalsy();
+
+      expect(res.body.length).toBe(2);
+      const ex = res.body[0].exercises.concat(res.body[1].exercises); 
+      expect(ex.some(w => w.exercise_id.name === 'chest fly')).toBeTruthy();
+      expect(ex.some(w => w.exercise_id.name === 'bench press')).toBeTruthy();
+      expect(ex.some(w => w.exercise_type === 'bodyweight')).toBeTruthy();
+      expect(ex.some(w => w.exercise_type === 'free weight')).toBeTruthy();
+      expect(ex.some(w => w.exercise_type === 'cable')).toBeTruthy();
+      expect(ex.some(w => w.exercise_type === 'machine')).toBeFalsy();
+      expect(ex.some(w => w.sets === 4)).toBeTruthy();
+      expect(ex.some(w => w.reps === 8)).toBeTruthy();
+      expect(ex.some(w => w.reps === 12)).toBeTruthy();
     });
   });
 
@@ -203,17 +212,20 @@ describe('/api/workouts', () => {
       const res = await response(workout._id, token);
       
       expect(res.status).toBe(200);
-      expect(res.body.length).toBe(2);
-      expect(res.body.some(w => w.exercise_id.name === 'chest fly')).toBeTruthy();
-      expect(res.body.some(w => w.exercise_id.name === 'bench press')).toBeTruthy();
-      expect(res.body.some(w => w.exercise_type === 'cable')).toBeTruthy();
-      expect(res.body.some(w => w.exercise_type === 'machine')).toBeTruthy();
-      expect(res.body.some(w => w.exercise_type === 'bodyweight')).toBeFalsy();
-      expect(res.body.some(w => w.sets === 4)).toBeTruthy();
-      expect(res.body.some(w => w.reps === 8)).toBeTruthy();
-      expect(res.body.some(w => w.reps === 12)).toBeTruthy();
-      expect(res.body.some(w => w.workout_id === workout.id)).toBeTruthy();
-      expect(res.body.some(w => w.workout_id === other_workout.id)).toBeFalsy();
+      expect(res.body).toHaveProperty('_id', workout.id); 
+      expect(res.body).toHaveProperty('date', workout.date.toJSON()); 
+      expect(res.body).toHaveProperty('user_id', workout.user_id.toString());  
+      expect(res.body.exercises.length).toBe(2);
+      expect(res.body.exercises.some(w => w.exercise_id.name === 'chest fly')).toBeTruthy();
+      expect(res.body.exercises.some(w => w.exercise_id.name === 'bench press')).toBeTruthy();
+      expect(res.body.exercises.some(w => w.exercise_type === 'cable')).toBeTruthy();
+      expect(res.body.exercises.some(w => w.exercise_type === 'machine')).toBeTruthy();
+      expect(res.body.exercises.some(w => w.exercise_type === 'bodyweight')).toBeFalsy();
+      expect(res.body.exercises.some(w => w.sets === 4)).toBeTruthy();
+      expect(res.body.exercises.some(w => w.reps === 8)).toBeTruthy();
+      expect(res.body.exercises.some(w => w.reps === 12)).toBeTruthy();
+      expect(res.body.exercises.some(w => w.workout_id === workout.id)).toBeTruthy();
+      expect(res.body.exercises.some(w => w.workout_id === other_workout.id)).toBeFalsy();
     });
   });
 
