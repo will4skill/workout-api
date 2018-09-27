@@ -3,5 +3,5 @@
   "db": "mongodb://localhost/workout_db",
   "port": "3900",
   "adminMiddlewareEnabled": false,
-  "authMiddlewareEnabled": false
+  "authMiddlewareEnabled": true
 }

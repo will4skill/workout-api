@@ -12,15 +12,13 @@ const Workout = require('../models/workout');
 const User = require('../models/user');
 
 router.get('/', auth, async (req, res) => { 
-  let completed_exercises = await CompletedExercise.find()
-    .populate('exercise_id', 'name -_id')
-    .populate('workout_id', '-__v');
+  const workouts = await Workout.find({user_id: req.user._id}).lean();
 
-  // Return all completed exercises for current user (multiple workouts possible)
-  // ** To do: filter with CompletedExercise.find() instead. **
-  completed_exercises = completed_exercises.filter(item => item.workout_id.user_id == req.user._id);
-  //console.log(completed_exercises);
-  res.send(completed_exercises);
+  for (let workout of workouts) {
+    workout.exercises = await CompletedExercise.find({workout_id: workout._id})
+      .populate('exercise_id', 'name -_id');
+  }
+  res.send(workouts);
 });
 
 router.post('/', auth, async (req, res) => { 
@@ -45,13 +43,8 @@ router.get('/:id', [auth, validateObjectId], async (req, res) => {
   }
 
   let completed_exercises = await CompletedExercise
-    .find() // Problem: can't get .find({ workouts: workout.id }) to work   
+    .find({ workout_id: workout._id })  
     .populate('exercise_id', 'name -_id'); // Insert names from Exercise documents
-  
-  // Work around for above problem: 
-  // Return all completed exercises for current user and current workout (multiple workouts not possible)
-  // ** To do: filter with CompletedExercise.find() instead. **
-  completed_exercises = completed_exercises.filter(item => item.workout_id == workout.id);
 
   res.send(completed_exercises);
 });
