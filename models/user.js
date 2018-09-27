@@ -28,10 +28,7 @@ const userSchema = new mongoose.Schema({
 userSchema.methods.generateAuthToken = function() {
   const secret = config.get('jwt_private_key');
   return jwt.sign({ 
-    _id: this._id, 
-    name: this.name,
-    email: this.email,
-    admin: this.admin 
+    _id: this._id, admin: this.admin 
   }, secret/*, { expiresIn: '1h' }*/);
 };
 
