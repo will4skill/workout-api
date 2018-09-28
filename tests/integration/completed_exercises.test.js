@@ -94,7 +94,7 @@ describe('/api/completed_exercises', () => {
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('_id', completed_exercise.id);
-      expect(res.body).toHaveProperty( 'exercise_id.name', 'bench press'); 
+      expect(res.body).toHaveProperty( 'exercise_id', exercise.id); 
     });
   });
 
@@ -312,7 +312,7 @@ describe('/api/completed_exercises', () => {
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('_id', completed_exercise.id);
-      expect(res.body).toHaveProperty( 'exercise_id.name', 'bench press');       
+      expect(res.body).toHaveProperty( 'exercise_id', exercise.id);       
     });
   });
 });

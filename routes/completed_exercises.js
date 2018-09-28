@@ -12,14 +12,13 @@ const Workout = require('../models/workout');
 const User = require('../models/user');
 
 router.get('/:id', [auth, validateObjectId], async (req, res) => { 
-  const completed_exercise = await CompletedExercise.findById(req.params.id)
-    .populate('exercise_id', 'name -_id')
-    .populate('workout_id', '-__v');
+  const completed_exercise = await CompletedExercise.findById(req.params.id);
 
   if (!completed_exercise) {
     res.status(404).send('Completed exercise with submitted ID not found');
   } else { // Check for current user
-    if (req.user._id !== (completed_exercise.workout_id.user_id).toString()) {
+    const workout = await Workout.findById(completed_exercise.workout_id);
+    if (req.user._id !== (workout.user_id).toString()) {
       res.status(403).send('Forbidden');
     } else {
       res.send(completed_exercise);
@@ -28,12 +27,13 @@ router.get('/:id', [auth, validateObjectId], async (req, res) => {
 });
 
 router.put('/:id', [auth, validateObjectId], async (req, res) => { 
-  let completed_exercise = await CompletedExercise.findById(req.params.id)
-      .populate('workout_id', '-__v');
+  let completed_exercise = await CompletedExercise.findById(req.params.id);
+
   if (!completed_exercise) {
     return res.status(404).send('Completed exercise with submitted ID not found');
   } else { // Check for current user
-    if (req.user._id !== (completed_exercise.workout_id.user_id).toString()) {
+    const workout = await Workout.findById(completed_exercise.workout_id);
+    if (req.user._id !== (workout.user_id).toString()) {
       return res.status(403).send('Forbidden');
     }
   }
@@ -64,18 +64,16 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
 });
 
 router.delete('/:id', [auth, validateObjectId], async (req, res) => { 
-  let completed_exercise = await CompletedExercise.findById(req.params.id)
-    .populate('exercise_id', 'name -_id')
-    .populate('workout_id', '-__v');
+  let completed_exercise = await CompletedExercise.findById(req.params.id);
   
   if (!completed_exercise) {
     res.status(404).send('Completed exercise with submitted ID not found');
   } else { // Check for current user
-    if (req.user._id !== (completed_exercise.workout_id.user_id).toString()) {
+    const workout = await Workout.findById(completed_exercise.workout_id);
+    if (req.user._id !== (workout.user_id).toString()) {
       res.status(403).send('Forbidden');
     } else {
       completed_exercise = await CompletedExercise.findByIdAndRemove(req.params.id)
-        .populate('exercise_id', 'name -_id');
       res.send(completed_exercise);
     }
   }
