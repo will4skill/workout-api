@@ -50,11 +50,11 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
         exercise_id: req.body.exercise_id,
         workout_id: completed_exercise.workout_id,
         exercise_type: req.body.exercise_type,
-        unilateral: req.body.unilateral,
+        unilateral: req.body.unilateral === undefined ? false : req.body.unilateral, // because defaults not triggered by findByIdAndUpdate
         sets: req.body.sets,
         reps: req.body.reps, 
-        load: req.body.load,
-        mum: req.body.mum
+        load: req.body.load || completed_exercise.load, // because defaults not triggered by findByIdAndUpdate
+        mum: req.body.mum === undefined ? false : req.body.mum // because defaults not triggered by findByIdAndUpdate
       }, 
       { new: true, runValidators: true });
       res.send(completed_exercise);

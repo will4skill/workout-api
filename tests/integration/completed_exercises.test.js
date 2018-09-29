@@ -131,6 +131,7 @@ describe('/api/completed_exercises', () => {
         exercise_type: 'machine',
         sets: 4, 
         reps: 8, 
+        load: 225,
       });
       await completed_exercise.save();
       other_exercise = new CompletedExercise({ 
@@ -139,6 +140,7 @@ describe('/api/completed_exercises', () => {
         exercise_type: 'machine',
         sets: 4, 
         reps: 8, 
+        load: 225,
       });
       await other_exercise.save();
       updated_exercise = { 
@@ -147,10 +149,7 @@ describe('/api/completed_exercises', () => {
         exercise_type: 'free weight',
         unilateral: true,
         sets: 3, 
-        reps: 12, 
-        load: 225,
-        mum: false // Note: apparently, if you call findByIdAndUpdate with missing params, the
-                   //       default you set is ignored and the value is saved as null. 
+        reps: 12 
       };
     });
 
