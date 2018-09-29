@@ -49,12 +49,12 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
       { 
         exercise_id: req.body.exercise_id,
         workout_id: completed_exercise.workout_id,
-        exercise_type: req.body.exercise_type || completed_exercise.exercise_type,
-        unilateral: req.body.unilateral || completed_exercise.unilateral,
+        exercise_type: req.body.exercise_type,
+        unilateral: req.body.unilateral,
         sets: req.body.sets,
         reps: req.body.reps, 
-        load: req.body.load || completed_exercise.load,
-        mum: req.body.mum || completed_exercise.mum
+        load: req.body.load,
+        mum: req.body.mum
       }, 
       { new: true, runValidators: true });
       res.send(completed_exercise);

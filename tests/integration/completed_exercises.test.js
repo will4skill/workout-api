@@ -148,9 +148,10 @@ describe('/api/completed_exercises', () => {
         unilateral: true,
         sets: 3, 
         reps: 12, 
-        load: 225
+        load: 225,
+        mum: false // Note: apparently, if you call findByIdAndUpdate with missing params, the
+                   //       default you set is ignored and the value is saved as null. 
       };
-      
     });
 
     it('should return 401 if client not logged in', async () => {

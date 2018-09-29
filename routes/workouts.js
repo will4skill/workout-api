@@ -105,11 +105,11 @@ router.post('/:id/completed_exercises/', auth, async (req, res) => {
     exercise_id: req.body.exercise_id,
     workout_id: req.params.id,
     exercise_type: req.body.exercise_type,
-    unilateral: req.body.unilateral || false,
+    unilateral: req.body.unilateral,
     sets: req.body.sets,
     reps: req.body.reps, 
-    load: req.body.load || 0,
-    mum: req.body.mum || false
+    load: req.body.load,
+    mum: req.body.mum
   });
 
   try { 
