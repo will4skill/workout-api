@@ -57,7 +57,7 @@ This is a simple API that can be used to track a user's workouts. The structure 
 |URL|HTTP verb|Result|Admin only?|
 |---|---|---|---|
 /api/completed_exercises/:id|GET|return a specific completed_exercise for current user|No|
-/api/completed_exercises/:id|PUT|update a specific completed_exercise for current user|Yes|
+/api/completed_exercises/:id|PUT|update a specific completed_exercise for current user|No|
 /api/completed_exercises/:id|DELETE|delete a specific completed_exercise for current user|No|
 
 ### Exercises Resource
