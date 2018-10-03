@@ -35,6 +35,8 @@
   const glutes = await new Muscle({ name: "glutes" }).save();
   const hamstrings = await new Muscle({ name: "hamstrings" }).save();
   const calves = await new Muscle({ name: "calves" }).save();
+  const front_forearms = await new Muscle({ name: "front-forearms" }).save();
+  const back_forearms = await new Muscle({ name: "back-forearms" }).save();
 
   const quad_exercises = [
     "back squat",
