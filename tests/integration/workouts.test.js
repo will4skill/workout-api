@@ -50,11 +50,11 @@ describe('/api/workouts', () => {
       await workout_2.save();
       await other_workout.save();
       completed_exercises = [
-          { exercise_id: exercise_1._id, exercise_type: 'bodyweight', sets: 4, reps: 8, workout_id: workout_1._id }, 
-          { exercise_id: exercise_2._id, exercise_type: 'free weight', sets: 4, reps: 12, workout_id: workout_2._id },
-          { exercise_id: exercise_2._id, exercise_type: 'cable', sets: 4, reps: 12, workout_id: workout_2._id },
-          { exercise_id: exercise_2._id, exercise_type: 'machine', sets: 100, reps: 100, workout_id: other_workout._id }         
-        ];
+        { exercise_id: exercise_1._id, exercise_type: 'bodyweight', sets: 4, reps: 8, workout_id: workout_1._id }, 
+        { exercise_id: exercise_2._id, exercise_type: 'free weight', sets: 4, reps: 12, workout_id: workout_2._id },
+        { exercise_id: exercise_2._id, exercise_type: 'cable', sets: 4, reps: 12, workout_id: workout_2._id },
+        { exercise_id: exercise_2._id, exercise_type: 'machine', sets: 100, reps: 100, workout_id: other_workout._id }         
+      ];
       await CompletedExercise.collection.insertMany(completed_exercises);
     });
 
@@ -86,6 +86,7 @@ describe('/api/workouts', () => {
       const ex = res.body[0].exercises.concat(res.body[1].exercises); 
       expect(ex.some(w => w.exercise_id.name === 'chest fly')).toBeTruthy();
       expect(ex.some(w => w.exercise_id.name === 'bench press')).toBeTruthy();
+      expect(ex.some(w => w.exercise_id.muscle_id === muscle.id)).toBeTruthy();
       expect(ex.some(w => w.exercise_type === 'bodyweight')).toBeTruthy();
       expect(ex.some(w => w.exercise_type === 'free weight')).toBeTruthy();
       expect(ex.some(w => w.exercise_type === 'cable')).toBeTruthy();
@@ -175,10 +176,10 @@ describe('/api/workouts', () => {
       await other_workout.save();
       await diff_user_workout.save();
       completed_exercises = [
-          { exercise_id: exercise_1._id, exercise_type: 'cable', sets: 4, reps: 8, workout_id: workout._id }, 
-          { exercise_id: exercise_2._id, exercise_type: 'machine',sets: 4, reps: 12, workout_id: workout._id },
-          { exercise_id: exercise_2._id, exercise_type: 'bodyweight',sets: 4, reps: 12, workout_id: other_workout._id }
-        ];
+        { exercise_id: exercise_1._id, exercise_type: 'cable', sets: 4, reps: 8, workout_id: workout._id }, 
+        { exercise_id: exercise_2._id, exercise_type: 'machine',sets: 4, reps: 12, workout_id: workout._id },
+        { exercise_id: exercise_2._id, exercise_type: 'bodyweight',sets: 4, reps: 12, workout_id: other_workout._id }
+      ];
       await CompletedExercise.collection.insertMany(completed_exercises);
     });
 
@@ -218,6 +219,7 @@ describe('/api/workouts', () => {
       expect(res.body.exercises.length).toBe(2);
       expect(res.body.exercises.some(w => w.exercise_id.name === 'chest fly')).toBeTruthy();
       expect(res.body.exercises.some(w => w.exercise_id.name === 'bench press')).toBeTruthy();
+      expect(res.body.exercises.some(w => w.exercise_id.muscle_id === muscle.id)).toBeTruthy();
       expect(res.body.exercises.some(w => w.exercise_type === 'cable')).toBeTruthy();
       expect(res.body.exercises.some(w => w.exercise_type === 'machine')).toBeTruthy();
       expect(res.body.exercises.some(w => w.exercise_type === 'bodyweight')).toBeFalsy();
@@ -338,10 +340,10 @@ describe('/api/workouts', () => {
       await other_workout.save();
       await diff_user_workout.save();
       completed_exercises = [
-          { exercise_id: exercise_1._id, exercise_type: 'cable', sets: 4, reps: 8, workout_id: workout._id }, 
-          { exercise_id: exercise_2._id, exercise_type: 'machine', sets: 4, reps: 12, workout_id: workout._id },
-          { exercise_id: exercise_2._id, exercise_type: 'free weight', sets: 4, reps: 12, workout_id: other_workout._id }
-        ];
+        { exercise_id: exercise_1._id, exercise_type: 'cable', sets: 4, reps: 8, workout_id: workout._id }, 
+        { exercise_id: exercise_2._id, exercise_type: 'machine', sets: 4, reps: 12, workout_id: workout._id },
+        { exercise_id: exercise_2._id, exercise_type: 'free weight', sets: 4, reps: 12, workout_id: other_workout._id }
+      ];
       await CompletedExercise.collection.insertMany(completed_exercises);
     });
 

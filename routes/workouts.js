@@ -16,7 +16,7 @@ router.get('/', auth, async (req, res) => {
 
   for (let workout of workouts) {
     workout.exercises = await CompletedExercise.find({workout_id: workout._id})
-      .populate('exercise_id', 'name -_id');
+      .populate('exercise_id', 'name muscle_id -_id');
   }
   res.send(workouts);
 });
@@ -44,7 +44,7 @@ router.get('/:id', [auth, validateObjectId], async (req, res) => {
 
   workout.exercises = await CompletedExercise
     .find({ workout_id: workout._id })  
-    .populate('exercise_id', 'name -_id'); // Insert names from Exercise documents
+    .populate('exercise_id', 'name muscle_id -_id'); // Insert names and muscle_ids from Exercise documents
 
   res.send(workout);
 });
