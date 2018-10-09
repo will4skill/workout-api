@@ -21,8 +21,8 @@ process.on('unhandledRejection', (exception) => { throw exception });
 // ** Node Error Logging: End **************************************************
 
 // ** Enable CORS: Start *******************************************************
-const cors = require('cors');
-app.use(cors());
+// const cors = require('cors');
+// app.use(cors());
 // ** Enable CORS: End *********************************************************
 
 // ** Express Routes: Start ****************************************************
