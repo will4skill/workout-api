@@ -6,7 +6,8 @@ const exerciseSchema = new mongoose.Schema({
   name: {
     type: String,
     maxlength: 50,
-    required: true
+    required: true,
+    unique: true
   },
   muscle_id: {
     type: mongoose.Schema.Types.ObjectId,

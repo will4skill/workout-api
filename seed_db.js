@@ -3,10 +3,18 @@
   const mongoose = require('mongoose');
   const Exercise = require('./models/exercise');
   const Muscle = require('./models/muscle');
+  const User = require('./models/user');
+  const Workout = require('./models/workout');
+  const CompletedExercise = require('./models/completed_exercise');
+  const bcrypt = require('bcrypt');
+
   const db = config.get('db');
   mongoose.connect(db, { useNewUrlParser: true });
   await Exercise.deleteMany({});
   await Muscle.deleteMany({});
+  await User.deleteMany({});
+  await Workout.deleteMany({});
+  await CompletedExercise.deleteMany({});
   let collection = [];
 
   function exercise_items(array, muscle) {
@@ -65,7 +73,7 @@
   const lat_exercises = [
     "wide-grip front lat pulldown",
     "close-grip front lat pulldown",
-    "chip up",
+    "chin up",
     "pull up",
     "bent-over row",
     "seated row"
@@ -111,6 +119,74 @@
   exercise_items(glute_exercises, glutes);
 
   await Exercise.collection.insertMany(collection);
+
+  const salt = await bcrypt.genSalt(10);
+  const password_digest = await bcrypt.hash("123456", salt);
+  const user = await new User({ name: "Adam", email: "adam@example.com", password_digest }).save();
+  const back_squat = await Exercise.findOne({name: 'back squat'});
+  const flat_bench_press = await Exercise.findOne({name: 'flat bench press'});
+  const chin_up = await Exercise.findOne({name: 'chin up'});
+  const lateral_raise = await Exercise.findOne({name: 'lateral raise'});
+  const leg_curl = await Exercise.findOne({name: 'leg curl'});
+
+  for (let i = 1; i < 32; i++) {
+    let workout = await new Workout({ date: new Date(`October ${i}, 2018`), user_id: user._id }).save();
+    
+    await new CompletedExercise({ 
+      exercise_id: back_squat._id, 
+      workout_id: workout._id, 
+      exercise_type: 'free weight', 
+      unilateral: false, 
+      sets: 5, 
+      reps: 5, 
+      load: 225, 
+      mum: false 
+    }).save();
+
+    await new CompletedExercise({ 
+      exercise_id: flat_bench_press._id, 
+      workout_id: workout._id, 
+      exercise_type: 'free weight', 
+      unilateral: false, 
+      sets: 4, 
+      reps: 8, 
+      load: 185, 
+      mum: true 
+    }).save();
+
+    await new CompletedExercise({ 
+      exercise_id: chin_up._id, 
+      workout_id: workout._id, 
+      exercise_type: 'bodyweight', 
+      unilateral: false, 
+      sets: 4, 
+      reps: 8, 
+      load: 0, 
+      mum: false 
+    }).save();
+
+    await new CompletedExercise({ 
+      exercise_id: lateral_raise._id, 
+      workout_id: workout._id, 
+      exercise_type: 'cable', 
+      unilateral: false, 
+      sets: 4, 
+      reps: 10, 
+      load: 12, 
+      mum: false 
+    }).save();
+
+    await new CompletedExercise({ 
+      exercise_id: leg_curl._id, 
+      workout_id: workout._id, 
+      exercise_type: 'machine', 
+      unilateral: true, 
+      sets: 4, 
+      reps: 10, 
+      load: 75, 
+      mum: false 
+    }).save();
+  }
 
   mongoose.connection.close();
 })();
