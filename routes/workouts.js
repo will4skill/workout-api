@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const request = require('supertest');
 const mongoose = require('mongoose');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
@@ -11,7 +10,7 @@ const Muscle = require('../models/muscle');
 const Workout = require('../models/workout');
 const User = require('../models/user');
 
-router.get('/', auth, async (req, res) => { 
+router.get('/', auth, async (req, res) => {
   const workouts = await Workout.find({user_id: req.user._id}).lean();
 
   for (let workout of workouts) {
@@ -21,18 +20,18 @@ router.get('/', auth, async (req, res) => {
   res.send(workouts);
 });
 
-router.post('/', auth, async (req, res) => { 
+router.post('/', auth, async (req, res) => {
   let workout = new Workout({ date: req.body.date, user_id: req.user._id });
-  
-  try { 
+
+  try {
     workout = await workout.save();
     res.send(workout);
   } catch (err) {
     res.status(400).send(err);
-  } 
+  }
 });
 
-router.get('/:id', [auth, validateObjectId], async (req, res) => { 
+router.get('/:id', [auth, validateObjectId], async (req, res) => {
   const workout = await Workout.findById(req.params.id).lean();
   if (!workout) {
     return res.status(404).send('Workout with submitted ID not found');
@@ -43,13 +42,13 @@ router.get('/:id', [auth, validateObjectId], async (req, res) => {
   }
 
   workout.exercises = await CompletedExercise
-    .find({ workout_id: workout._id })  
+    .find({ workout_id: workout._id })
     .populate('exercise_id', 'name muscle_id -_id'); // Insert names and muscle_ids from Exercise documents
 
   res.send(workout);
 });
 
-router.put('/:id', [auth, validateObjectId], async (req, res) => { 
+router.put('/:id', [auth, validateObjectId], async (req, res) => {
   let workout = await Workout.findById(req.params.id);
   if (!workout) {
     return res.status(404).send('Workout with submitted ID not found');
@@ -60,8 +59,8 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
   }
 
   try {
-      workout = await Workout.findByIdAndUpdate(req.params.id, 
-      { date: req.body.date, user_id: req.user._id }, 
+      workout = await Workout.findByIdAndUpdate(req.params.id,
+      { date: req.body.date, user_id: req.user._id },
       { new: true, runValidators: true });
       res.send(workout);
   } catch(err) {
@@ -69,7 +68,7 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
   }
 });
 
-router.delete('/:id', [auth, validateObjectId], async (req, res) => { 
+router.delete('/:id', [auth, validateObjectId], async (req, res) => {
   let workout = await Workout.findById(req.params.id);
   if (!workout) {
     return res.status(404).send('Workout with submitted ID not found');
@@ -79,13 +78,13 @@ router.delete('/:id', [auth, validateObjectId], async (req, res) => {
     } else {
       // Delete associated completed_workouts
       workout = await Workout.findByIdAndRemove(req.params.id);
-      await CompletedExercise.deleteMany({ workout_id: workout._id }); 
+      await CompletedExercise.deleteMany({ workout_id: workout._id });
       res.send(workout); // Potential update: return removed completed_workouts
-    } 
+    }
   }
 });
 
-router.post('/:id/completed_exercises/', auth, async (req, res) => { 
+router.post('/:id/completed_exercises/', auth, async (req, res) => {
   const workout = await Workout.findById(req.params.id);
   if (!workout) {
     return res.status(404).send('Workout with submitted ID not found');
@@ -100,24 +99,24 @@ router.post('/:id/completed_exercises/', auth, async (req, res) => {
   }
   const exercise = await Exercise.findById(req.body.exercise_id);
   if (!exercise) return res.status(400).send('Invalid Exercise');
-  
-  let completed_exercise = new CompletedExercise({ 
+
+  let completed_exercise = new CompletedExercise({
     exercise_id: req.body.exercise_id,
     workout_id: req.params.id,
     exercise_type: req.body.exercise_type,
     unilateral: req.body.unilateral,
     sets: req.body.sets,
-    reps: req.body.reps, 
+    reps: req.body.reps,
     load: req.body.load,
     mum: req.body.mum
   });
 
-  try { 
+  try {
     completed_exercise = await completed_exercise.save();
     res.send(completed_exercise);
   } catch (err) {
     res.status(400).send(err);
-  } 
+  }
 });
 
 module.exports = router;
