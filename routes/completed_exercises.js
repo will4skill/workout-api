@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const request = require('supertest');
 const mongoose = require('mongoose');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
@@ -11,7 +10,7 @@ const Muscle = require('../models/muscle');
 const Workout = require('../models/workout');
 const User = require('../models/user');
 
-router.get('/:id', [auth, validateObjectId], async (req, res) => { 
+router.get('/:id', [auth, validateObjectId], async (req, res) => {
   const completed_exercise = await CompletedExercise.findById(req.params.id);
 
   if (!completed_exercise) {
@@ -26,7 +25,7 @@ router.get('/:id', [auth, validateObjectId], async (req, res) => {
   }
 });
 
-router.put('/:id', [auth, validateObjectId], async (req, res) => { 
+router.put('/:id', [auth, validateObjectId], async (req, res) => {
   let completed_exercise = await CompletedExercise.findById(req.params.id);
 
   if (!completed_exercise) {
@@ -45,17 +44,17 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
   if (!exercise) return res.status(400).send('Invalid Exercise');
 
   try {
-      completed_exercise = await CompletedExercise.findByIdAndUpdate(req.params.id , 
-      { 
+      completed_exercise = await CompletedExercise.findByIdAndUpdate(req.params.id ,
+      {
         exercise_id: req.body.exercise_id,
         workout_id: completed_exercise.workout_id,
         exercise_type: req.body.exercise_type,
         unilateral: req.body.unilateral === undefined ? false : req.body.unilateral, // because defaults not triggered by findByIdAndUpdate
         sets: req.body.sets,
-        reps: req.body.reps, 
+        reps: req.body.reps,
         load: req.body.load || completed_exercise.load, // because defaults not triggered by findByIdAndUpdate
         mum: req.body.mum === undefined ? false : req.body.mum // because defaults not triggered by findByIdAndUpdate
-      }, 
+      },
       { new: true, runValidators: true });
       res.send(completed_exercise);
   } catch(err) {
@@ -63,9 +62,9 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
   }
 });
 
-router.delete('/:id', [auth, validateObjectId], async (req, res) => { 
+router.delete('/:id', [auth, validateObjectId], async (req, res) => {
   let completed_exercise = await CompletedExercise.findById(req.params.id);
-  
+
   if (!completed_exercise) {
     res.status(404).send('Completed exercise with submitted ID not found');
   } else { // Check for current user

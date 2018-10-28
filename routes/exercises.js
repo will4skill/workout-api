@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const request = require('supertest');
 const mongoose = require('mongoose');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
@@ -8,12 +7,12 @@ const validateObjectId = require('../middleware/objectId_validation');
 const Muscle = require('../models/muscle');
 const Exercise = require('../models/exercise');
 
-router.get('/', auth, async (req, res) => { 
+router.get('/', auth, async (req, res) => {
   const exercises = await Exercise.find().sort('name');
   res.send(exercises);
 });
 
-router.post('/', [auth, admin], async (req, res) => { 
+router.post('/', [auth, admin], async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.body.muscle_id)) {
     return res.status(400).send('Invalid Muscle ID');
   }
@@ -21,20 +20,20 @@ router.post('/', [auth, admin], async (req, res) => {
   const muscle = await Muscle.findById(req.body.muscle_id);
   if (!muscle) return res.status(400).send('Invalid Muscle');
 
-  const exercise = new Exercise({ 
-    name: req.body.name, 
-    muscle_id: req.body.muscle_id 
+  const exercise = new Exercise({
+    name: req.body.name,
+    muscle_id: req.body.muscle_id
   });
-  
-  try { 
+
+  try {
     await exercise.save();
     res.send(exercise);
   } catch (err) {
     res.status(400).send(err);
-  } 
+  }
 });
 
-router.get('/:id', [auth, admin, validateObjectId], async (req, res) => { 
+router.get('/:id', [auth, admin, validateObjectId], async (req, res) => {
   const exercise = await Exercise.findById(req.params.id);
   if (!exercise) {
     res.status(404).send('Exercise with submitted ID not found');
@@ -43,7 +42,7 @@ router.get('/:id', [auth, admin, validateObjectId], async (req, res) => {
   }
 });
 
-router.put('/:id', [auth, admin, validateObjectId], async (req, res) => { 
+router.put('/:id', [auth, admin, validateObjectId], async (req, res) => {
   let exercise = await Exercise.findById(req.params.id);
   if (!exercise) return res.status(404).send('Exercise with submitted ID not found');
 
@@ -55,8 +54,8 @@ router.put('/:id', [auth, admin, validateObjectId], async (req, res) => {
   if (!muscle) return res.status(400).send('Invalid Muscle');
 
   try {
-      exercise = await Exercise.findByIdAndUpdate(req.params.id , 
-      { name: req.body.name, muscle_id: req.body.muscle_id }, 
+      exercise = await Exercise.findByIdAndUpdate(req.params.id ,
+      { name: req.body.name, muscle_id: req.body.muscle_id },
       { new: true, runValidators: true });
       res.send(exercise);
   } catch(err) {
@@ -64,7 +63,7 @@ router.put('/:id', [auth, admin, validateObjectId], async (req, res) => {
   }
 });
 
-router.delete('/:id', [auth, admin, validateObjectId], async (req, res) => { 
+router.delete('/:id', [auth, admin, validateObjectId], async (req, res) => {
   const exercise = await Exercise.findByIdAndRemove(req.params.id);
   if (!exercise) {
     res.status(404).send('Exercise with submitted ID not found');
