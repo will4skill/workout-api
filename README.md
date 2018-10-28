@@ -2,7 +2,7 @@
 
 ## Project Description
 This is a simple API that can be used to track a user's workouts. The structure of this project is based on what I learned in the following course: https://codewithmosh.com/p/the-complete-node-js-course
- 
+
  The basic technology stack is:
 * MongoDB + Mongoose (database)
 * Express (web server)
@@ -17,7 +17,7 @@ This is a simple API that can be used to track a user's workouts. The structure 
 5. ``` $ npm i ``` # install the packages listed in package.json
 6. From the command line, set the value of the jwt_private_key environment variable (this private key is used to create the JSON Web tokens that allow users to securely log in to the application.)
    * Example (Mac): ``` $ export workout_api_jwt_private_key=your_private_key ```
-7. ``` $ npm test <file.name.test.js> ``` # Run tests (for some reason, the tests fail unless the files are tested individually)
+7. ``` $ npm test ``` # Run tests
 8. ``` $ npm start ``` # start server
 9. ``` $ mongod ``` # run the Mongo daemon
 10. ``` $ node seed_db ``` # seed the database with muscles and exercises
