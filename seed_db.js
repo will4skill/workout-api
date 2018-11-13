@@ -29,7 +29,7 @@
   const biceps = await new Muscle({ name: "biceps" }).save();
   const pectorals = await new Muscle({ name: "pectorals" }).save();
   const obliques = await new Muscle({ name: "obliques" }).save();
-  const adominals = await new Muscle({ name: "abdominals" }).save();
+  const abdominals = await new Muscle({ name: "abdominals" }).save();
   const quadriceps = await new Muscle({ name: "quadriceps" }).save();
   const hip_adductors = await new Muscle({ name: "hip adductors" }).save();
   const tibialis_anterior = await new Muscle({ name: "tibialis anterior" }).save();
@@ -113,7 +113,7 @@
   exercise_items(posterior_deltoid_exercises, posterior_deltoids);
   exercise_items(tricep_exercises, triceps);
   exercise_items(bicep_exercises, biceps);
-  exercise_items(ab_exercises, adominals);
+  exercise_items(ab_exercises, abdominals);
   exercise_items(front_neck_exercises, front_neck);
   exercise_items(upper_trap_exercises, upper_trapezius);
   exercise_items(glute_exercises, glutes);
@@ -131,63 +131,62 @@
 
   for (let i = 1; i < 32; i++) {
     let workout = await new Workout({ date: new Date(`October ${i}, 2018`), user_id: user._id }).save();
-    
-    await new CompletedExercise({ 
-      exercise_id: back_squat._id, 
-      workout_id: workout._id, 
-      exercise_type: 'free weight', 
-      unilateral: false, 
-      sets: 5, 
-      reps: 5, 
-      load: 225, 
-      mum: false 
+
+    await new CompletedExercise({
+      exercise_id: back_squat._id,
+      workout_id: workout._id,
+      exercise_type: 'free weight',
+      unilateral: false,
+      sets: 5,
+      reps: 5,
+      load: 225,
+      mum: false
     }).save();
 
-    await new CompletedExercise({ 
-      exercise_id: flat_bench_press._id, 
-      workout_id: workout._id, 
-      exercise_type: 'free weight', 
-      unilateral: false, 
-      sets: 4, 
-      reps: 8, 
-      load: 185, 
-      mum: true 
+    await new CompletedExercise({
+      exercise_id: flat_bench_press._id,
+      workout_id: workout._id,
+      exercise_type: 'free weight',
+      unilateral: false,
+      sets: 4,
+      reps: 8,
+      load: 185,
+      mum: true
     }).save();
 
-    await new CompletedExercise({ 
-      exercise_id: chin_up._id, 
-      workout_id: workout._id, 
-      exercise_type: 'bodyweight', 
-      unilateral: false, 
-      sets: 4, 
-      reps: 8, 
-      load: 0, 
-      mum: false 
+    await new CompletedExercise({
+      exercise_id: chin_up._id,
+      workout_id: workout._id,
+      exercise_type: 'bodyweight',
+      unilateral: false,
+      sets: 4,
+      reps: 8,
+      load: 0,
+      mum: false
     }).save();
 
-    await new CompletedExercise({ 
-      exercise_id: lateral_raise._id, 
-      workout_id: workout._id, 
-      exercise_type: 'cable', 
-      unilateral: false, 
-      sets: 4, 
-      reps: 10, 
-      load: 12, 
-      mum: false 
+    await new CompletedExercise({
+      exercise_id: lateral_raise._id,
+      workout_id: workout._id,
+      exercise_type: 'cable',
+      unilateral: false,
+      sets: 4,
+      reps: 10,
+      load: 12,
+      mum: false
     }).save();
 
-    await new CompletedExercise({ 
-      exercise_id: leg_curl._id, 
-      workout_id: workout._id, 
-      exercise_type: 'machine', 
-      unilateral: true, 
-      sets: 4, 
-      reps: 10, 
-      load: 75, 
-      mum: false 
+    await new CompletedExercise({
+      exercise_id: leg_curl._id,
+      workout_id: workout._id,
+      exercise_type: 'machine',
+      unilateral: true,
+      sets: 4,
+      reps: 10,
+      load: 75,
+      mum: false
     }).save();
   }
 
   mongoose.connection.close();
 })();
-
