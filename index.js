@@ -36,8 +36,8 @@ const error = require('./middleware/error');
 
 app.get('/api', (req, res) => {
   const url = "https://github.com/jtimwill/workout-api";
-  res.send(`See README for API use instructions: ${url}`));
-}
+  res.send(`See README for API use instructions: ${url}`);
+});
 app.use(express.json());
 app.use('/api/users', users);
 app.use('/api/workouts', workouts);
