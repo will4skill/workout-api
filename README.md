@@ -22,6 +22,8 @@ This is a simple API that can be used to track a user's workouts. The structure 
 9. ``` $ mongod ``` # run the Mongo daemon
 10. ``` $ node seed_db ``` # seed the database with muscles and exercises
 11. Done. You can now use a command line tool like ``` $ curl ```, or an application like Postman to test the API endpoints.
+12. ``` $ npm outdated ``` # check for outdated packages
+13. ``` $ npm update ``` # update packages
 
 ## App Structure
 <p align="center">
